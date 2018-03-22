@@ -3,8 +3,10 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
 import sys
+import re
 import numpy as np
 import wien2k.winput as winput
+import wien2k.dm     as wdm   
 
 """
 Created by Juan Fernandez Afonso
@@ -236,50 +238,60 @@ class wtools(winput.wien2k):
 	    print("ERROR: "+self.case+".dmat"+spin+" file does not exist")
 	    return None
 
-    def scfdmat():
-        return None
 
     # This method was not intensively tested!!!!!
-    def scfdmat(self, spin='up', iatom = ''):
+    def scfdmat(self, file_spin='up', dmat_spin = 'all', iatom = '', file_read = None):
 	# This definition only is tested for cases with SOC for rotated and non rotated systems!
 	# This is for: case.scfdmup and case.scfdmrotup
 	# from winput import natdm
 	# implement the natdm method! until this this variable will not be used!!!!
 
-        if self.soc:
-		if os.path.exists(self.case+'.scfdmrotup'):
-			# Careful! The structure of case.scfdmrotup is different than the one without rotation
-			scfile = scf.case+'.scfdmrotup'
-		else:
-			scfile = scf.case+'.scfdmup'
-	else:
-		scfile = self.case+'.scfdm'+spin
+        # ERROR CONTROL trying to read scfdmup when no sp!
+        
+        if file_read:
+            scfile = file_read
+
+        else:
+            if self.soc:
+                # If the calculation is done with spin-orbit coupling everything is written into case.scfdmup
+	        if os.path.exists(self.case+'.scfdmrotup'):
+		    # Careful! The structure of case.scfdmrotup is different than the one without rotation
+		    scfile = self.case+'.scfdmrotup'
+	        else:
+ 		    scfile = self.case+'.scfdmup'
+	    else:
+	            scfile = self.case+'.scfdm'+file_spin
 
 	if not os.path.exists(scfile):
 		print("ERROR: "+scfile+" struct file does not exist")
 		return None
-	if spin != 'UPUP' and spin!= 'DNDN'and spin!= 'UPDN':
-		print("ERROR: wrong spin sector selected")
-		return None
 
-	# nat = natdm(self.case)
 	with open(scfile) as scfdm:
 		lscfdm = scfdm.readlines()
 	
 	dmts = {}
-	if scfile == case+'.scfdmrotup':
-		for i in range(len(lscfdm)):
-			if ' Density matrix '+spin+' block,' in lscfdm[i]:
-				L = int(float(lscfdm[i].split()[-1]))
-				ati = int(float(lscfdm[i+2*(2*L+1)+1+2].split()[0][4:-1]))
-				dmi_re = np.loadtxt(lscfdm[i+1:i+1+2*L+1])
-				dmi_im = np.loadtxt(lscfdm[i+1+1+2*L+1:i+1+2*L+1+1+2*L+1])
-				dmts[ati] = dmi_re + 1j*dmi_im
-	'''		
-	if len(dmts) != nat:
-		print("Error: number of atoms inconsistent with "+case+".indm(c) input")
-		return None
-        '''
+        rdm = re.compile('(Density matrix )(UPUP|DNDN|UPDN)')
+	
+	for i in range(len(lscfdm)):
+            # Identify this with a regular expresion!
+            if re.search(rdm, lscfdm[i]):
+                #if ' Density matrix '+spin+' block,' in lscfdm[i]:
+    		L = int(lscfdm[i].split()[-1])
+                ati = int(lscfdm[i+2*(2*L+1)+1+2].split()[0][4:-1])
+                block = lscfdm[i].split()[2]
+    		dmi_re = np.loadtxt(lscfdm[i+1:i+1+2*L+1])
+                dmi_im = np.loadtxt(lscfdm[i+1+1+2*L+1:i+1+2*L+1+1+2*L+1])
+                dmi    = dmi_re + 1j*dmi_im
+                
+                if block == "UPUP":
+                    dmi_uu = dmi_re + 1j*dmi_im
+                if block == "UPDN":
+                    dmi_ud = dmi_re + 1j*dmi_im
+                if block == "DNDN":
+                    dmi_dd = dmi_re + 1j*dmi_im
+                    dmi    = wdm.wrap_dmat(dmi_uu, dmi_dd, dmi_ud) 
+                    dmts[ati] = wdm.dmat(dmi)
+    		
 	if iatom == '':
 		return dmts
 	else:
