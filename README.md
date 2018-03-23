@@ -20,7 +20,8 @@ module was used to prevent compatibility problems with Python3.
 * [Matplotlib](https://matplotlib.org)
 * [SymPy](http://www.sympy.org/en/index.html)
 
+## Usage
 
-## Package import
+## Importing the package
 
-## Example: short test case
+## Short test case
