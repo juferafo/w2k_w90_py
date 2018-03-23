@@ -3,7 +3,6 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 from sympy.functions.special.tensor_functions import KroneckerDelta
 import numpy as np
-
 import quant.mathop as mathop
 
 """
@@ -122,18 +121,119 @@ def pauli(axis = None):
 		return pauli
 
 
-def expe_O(D, O):
-        # Not tested
-	'''
-	This definition calculates the Expectation value of an operator O as:
-	<A> = Tr(OD)       (if O is hermitian)
-	<A> = Tr((O^{+})D) (if O is non hermitian)
-	where D is the density matrix <c^{+}c>
-	'''
-	if (O == np.asmatrix(O)).all():
-		return np.trace(np.dot(O,D))
+# Not tested with wien2k dmats
+def cb2sb(orbital = None, ket = True):
+        """
+        This definition transforms the cubic harmonic basis (bra/ket) into spherical harmonic basis.
+        If no orbital parameter is provided it returns the full unitary transformation matrix from 
+        the cubic basis to the spherical harmonic basis:
+
+            U * | cubic > = | spherical >
+
+        cb2sb(orbital=None, ket=True):
+
+            orbital: Cubic harmonic orbital [z2, x2y2, xy, yz, xz]. 
+            orbital: Default value None returns the transformation matrix.
+
+            ket    : Ket or bra option for the basis. Ket is asumed in the default value. 
+        """
+	z2   =               np.array([ 0, 0, 1, 0, 0])
+	x2y2 = 1./np.sqrt(2)*np.array([ 1, 0, 0, 0, 1])
+	xy   = 1j/np.sqrt(2)*np.array([ 1, 0, 0, 0,-1])
+	yz   = 1j/np.sqrt(2)*np.array([ 0, 1, 0, 1, 0])
+	xz   = 1./np.sqrt(2)*np.array([ 0, 1, 0,-1, 0])
+
+	d = {'z2':z2, 'x2y2':x2y2, 'xy':xy, 'yz':yz, 'xz':xz}
+	
+        # Kets (columns) and bras (rows) transform differently
+	# Carefull with the bra relations! Not have been intensively tested!
+        if ket:
+		for k in d.keys():
+			d[k] = trans([d[k]])
 	else:
-		return np.trace(np.dot(dagger(O),D))
+		for k in d.keys():
+			d[k] = conj(d[k])
+		
+	if orbital:
+		return d[orbital]
+	else:
+                U = np.array([z2,x2y2,xy,yz,xz])
+                if ket:
+                    return trans(U)
+                else:
+                    return conj(U)
+
+
+def sb2cb():
+        """
+        This definition transforms the spherical harmonic basis (bra/ket) into spherical harmonic basis.
+
+            V * | cubic > = | spherical >
+
+        It is implemented to work in the ket space and returns the full unitary transformation V
+        NEED MORE DESCRIPTION!!!
+        """
+        
+        return dagger(cb2sb())
+
+
+# Not tested yet!!!!
+# Not finnished yet --- arrange the t2g oart!
+# Make the inverse jb2cb!!!!
+def cb2jb(orbital = None, subset = None):
+        # Possiblily including the ket feature?
+        """
+
+        d orbitals order = [z2, x2y2, xy, yz, xz] \otimes [up, down]
+
+        """
+
+	z2_up   =                np.array([  1,  0,  0,  0,  0,  0,  0,  0,  0,  0])
+	x2y2_up =                np.array([  0,  1,  0,  0,  0,  0,  0,  0,  0,  0])
+	z2_dn   =                np.array([  0,  0,  0,  0,  0,  1,  0,  0,  0,  0])
+	x2y2_dn =                np.array([  0,  0,  0,  0,  0,  0,  1,  0,  0,  0])
+	j3_p3   = (1/np.sqrt(2))*np.array([  0,  0,  0,  1, 1j,  0,  0,  0,  0,  0])
+	j3_m3   = (1/np.sqrt(2))*np.array([  0,  0,  0,  0,  0,  0,  0,  0,  1,-1j])
+	j3_p1   = (1/np.sqrt(6))*np.array([  0,  0,  2,  0,  0,  0,  0,  0, -1,-1j])
+	j3_m1   = (1/np.sqrt(6))*np.array([  0,  0,  0,  1,-1j,  0,  0,  2,  0,  0])
+	j1_p1   = (1/np.sqrt(3))*np.array([  0,  0,  1,  0,  0,  0,  0,  0,  1, 1j])
+	j1_m1   = (1/np.sqrt(3))*np.array([  0,  0,  0, -1, 1j,  0,  0,  1,  0,  0])
+    
+        U = np.array([z2_up, x2y2_up, z2_dn, x2y2_dn, j3_p3, j3_m3, j3_p1, j3_m1, j1_p1, j1_m1])
+
+        if subset == "eg":
+            return np.eye((2,2))
+        if subset == "t2g":
+            # fix this format!
+            #return U[4:10,[2:5,7:10]]
+            pass
+        else:
+            return U
+
+
+# TESTED with eg+t2g density matrices!
+def dm_sb2cb(dms, U = sb2cb()):
+    """
+    This definition transform the density matrix expresed in terms of the spherical harmonic basis
+    into cubic harmonics. It is implemented for l = 2 orbitals in an octahedral crystal field.
+    The order of the spherical harmonics is: ml = [-l, l]
+
+        WRITE MORE DESCRIPTION!!!
+
+    dm_sb2cb(dms):
+        
+        dms: density matrix in the spherical harmonic basis
+    """
+    
+    return mathop.UOp(U, dms) 
+
+
+def dm_cb2jb(dms, U = cb2jb()):
+	'''
+	This method transform the density matrix from the cubic to the effective eg+jjz basis
+	'''
+	
+	return mathop.UOp(U, dms)
 
 def dmc_sb(orbital):
 	'''
@@ -179,6 +279,65 @@ def dmc_sb(orbital):
 		return {'z2': z2, 'x2y2': x2y2, 'xy': xy, 'xz': xz, 'yz': yz}
         else:
             return None
+
+
+
+def dmsoc_cb(block = 'full'):
+        """
+        Density matrix elements corresponding to the spin-orbit couplin interaction for the Oh crystal field.
+        Occupation number expresed in the cubic harmonic basis: [z2, x2y2, z2, x2y2, xy, yz, xz] \otimes [up, down]
+
+        dmsoc_cb(block = 'full'):
+
+            block = "UPUP", "UPDN" or "DNDN" will return the UPUP, UPDN or DNDN matrix block.
+            block = 'full' default value will return all the spin sectors in a 2*(2*l+1) square matrix.
+        """
+	soc_uu = np.array([[  0,  0,  0,  0,  0],\
+			   [  0,  0,-2j,  0,  0],\
+			   [  0, 2j,  0,  0,  0],\
+			   [  0,  0,  0,  0, 1j],\
+			   [  0,  0,  0,-1j,  0]])
+	soc_dd = np.array([[  0,  0,  0,  0,  0],\
+			   [  0,  0, 2j,  0,  0],\
+			   [  0,-2j,  0,  0,  0],\
+			   [  0,  0,  0,  0,-1j],\
+			   [  0,  0,  0, 1j,  0]])
+	soc_ud = np.array([[  0,  0,  0, np.sqrt(3)*1j,-np.sqrt(3)],\
+	                   [  0,  0,  0, 1j, 1],\
+	                   [  0,  0,  0, 1,-1j],\
+	                   [-np.sqrt(3)*1j,-1j,-1, 0, 0],\
+	                   [ np.sqrt(3),-1, 1j, 0, 0]])
+        soc_du = conj(soc_ud)
+
+        soc = np.bmat([[soc_uu, soc_ud],[soc_du, soc_dd]])        
+        
+        if block == "UPUP":
+            return soc_uu
+        elif block == "UPDN":
+            return soc_ud
+        elif block == "DNUP":
+            return soc_du
+        elif block == "DNDN":
+            return soc_dd
+        elif block == "full":
+            return soc
+        else:
+            return None
+        
+        # Possible update: block = "eg" or "t2g" for the soc matrix for those orbital flavours
+        """
+        hsoc_uu = np.array([[  0,  0,  0],\
+			    [  0,  0, 1j],\
+			    [  0,-1j,  0]])
+	
+	hsoc_dd = np.array([[  0,  0,  0],\
+			    [  0,  0,-1j],\
+			    [  0, 1j,  0]])
+	
+	hsoc_ud = np.array([[  0,  1,-1j],\
+			    [ -1,  0,  0],\
+			    [ 1j,  0,  0]])
+        """
 
 
 def dmj_cb(orbital):
@@ -279,136 +438,14 @@ def dmj_cb(orbital):
             return None
 
 
-def dmsoc_cb(block = 'full'):
-        """
-        Density matrix elements corresponding to the spin-orbit couplin interaction for the Oh crystal field.
-        Occupation number expresed in the cubic harmonic basis: [z2, x2y2, z2, x2y2, xy, yz, xz] \otimes [up, down]
-
-        dmsoc_cb(block = 'full'):
-
-            block = "UPUP", "UPDN" or "DNDN" will return the UPUP, UPDN or DNDN matrix block.
-            block = 'full' default value will return all the spin sectors in a 2*(2*l+1) square matrix.
-        """
-	soc_uu = np.array([[  0,  0,  0,  0,  0],\
-			   [  0,  0,-2j,  0,  0],\
-			   [  0, 2j,  0,  0,  0],\
-			   [  0,  0,  0,  0, 1j],\
-			   [  0,  0,  0,-1j,  0]])
-	soc_dd = np.array([[  0,  0,  0,  0,  0],\
-			   [  0,  0, 2j,  0,  0],\
-			   [  0,-2j,  0,  0,  0],\
-			   [  0,  0,  0,  0,-1j],\
-			   [  0,  0,  0, 1j,  0]])
-	soc_ud = np.array([[  0,  0,  0, np.sqrt(3)*1j,-np.sqrt(3)],\
-	                   [  0,  0,  0, 1j, 1],\
-	                   [  0,  0,  0, 1,-1j],\
-	                   [-np.sqrt(3)*1j,-1j,-1, 0, 0],\
-	                   [ np.sqrt(3),-1, 1j, 0, 0]])
-        soc_du = conj(soc_ud)
-
-        soc = np.bmat([[soc_uu, soc_ud],[soc_du, soc_dd]])        
-        
-        if block == "UPUP":
-            return soc_uu
-        elif block == "UPDN":
-            return soc_ud
-        elif block == "DNUP":
-            return soc_du
-        elif block == "DNDN":
-            return soc_dd
-        elif block == "full":
-            return soc
-        else:
-            return None
-        
-        # Possible update: block = "eg" or "t2g" for the soc matrix for those orbital flavours
-        """
-        hsoc_uu = np.array([[  0,  0,  0],\
-			    [  0,  0, 1j],\
-			    [  0,-1j,  0]])
-	
-	hsoc_dd = np.array([[  0,  0,  0],\
-			    [  0,  0,-1j],\
-			    [  0, 1j,  0]])
-	
-	hsoc_ud = np.array([[  0,  1,-1j],\
-			    [ -1,  0,  0],\
-			    [ 1j,  0,  0]])
-        """
-
-
-# Not tested with wien2k dmats
-def cb2sb(orbital = None, ket = True):
-        """
-        This definition transforms the cubic harmonic basis (bra/ket) into spherical harmonic basis.
-        If no orbital parameter is provided it returns the full unitary transformation matrix from 
-        the cubic basis to the spherical harmonic basis:
-
-            U * | cubic > = | spherical >
-
-        cb2sb(orbital=None, ket=True):
-
-            orbital: Cubic harmonic orbital [z2, x2y2, xy, yz, xz]. 
-            orbital: Default value None returns the transformation matrix.
-
-            ket    : Ket or bra option for the basis. Ket is asumed in the default value. 
-        """
-	z2   =               np.array([ 0, 0, 1, 0, 0])
-	x2y2 = 1./np.sqrt(2)*np.array([ 1, 0, 0, 0, 1])
-	xy   = 1j/np.sqrt(2)*np.array([ 1, 0, 0, 0,-1])
-	yz   = 1j/np.sqrt(2)*np.array([ 0, 1, 0, 1, 0])
-	xz   = 1./np.sqrt(2)*np.array([ 0, 1, 0,-1, 0])
-
-	d = {'z2':z2, 'x2y2':x2y2, 'xy':xy, 'yz':yz, 'xz':xz}
-	
-        # Kets (columns) and bras (rows) transform differently
-	# Carefull with the bra relations! Not have been intensively tested!
-        if ket:
-		for k in d.keys():
-			d[k] = trans([d[k]])
-	else:
-		for k in d.keys():
-			d[k] = conj(d[k])
-		
-	if orbital:
-		return d[orbital]
-	else:
-                U = np.array([z2,x2y2,xy,yz,xz])
-                if ket:
-                    return trans(U)
-                else:
-                    return conj(U)
-
-
-def sb2cb():
-        """
-        This definition transforms the spherical harmonic basis (bra/ket) into spherical harmonic basis.
-
-            V * | cubic > = | spherical >
-
-        It is implemented to work in the ket space and returns the full unitary transformation V
-        NEED MORE DESCRIPTION!!!
-        """
-        
-        return dagger(cb2sb())
 
 
 
-# TESTED with eg+t2g density matrices!
-def dm_sb2cb(dms, U = sb2cb()):
-    """
-    This definition transform the density matrix expresed in terms of the spherical harmonic basis
-    into cubic harmonics. It is implemented for l = 2 orbitals in an octahedral crystal field.
-    The order of the spherical harmonics is: ml = [-l, l]
 
-        WRITE MORE DESCRIPTION!!!
 
-    dm_sb2cb(dms):
-        
-        dms: density matrix in the spherical harmonic basis
-    """
-    
-    return mathop.UOp(U, dms) 
+
+
+
 
 
 
@@ -450,55 +487,5 @@ def jb2ct2gb(orbital = None, ket = True):
                     return conj(U)
 
 
-# Not tested yet!!!!
-def cb2jb(orbital = None, subset = None):
-        # Possiblily including the ket feature?
-        """
 
-        d orbitals order = [z2, x2y2, xy, yz, xz] \otimes [up, down]
 
-        """
-
-	z2_up   =                np.array([  1,  0,  0,  0,  0,  0,  0,  0,  0,  0])
-	x2y2_up =                np.array([  0,  1,  0,  0,  0,  0,  0,  0,  0,  0])
-	z2_dn   =                np.array([  0,  0,  0,  0,  0,  1,  0,  0,  0,  0])
-	x2y2_dn =                np.array([  0,  0,  0,  0,  0,  0,  1,  0,  0,  0])
-	j3_p3   = (1/np.sqrt(2))*np.array([  0,  0,  0,  1, 1j,  0,  0,  0,  0,  0])
-	j3_m3   = (1/np.sqrt(2))*np.array([  0,  0,  0,  0,  0,  0,  0,  0,  1,-1j])
-	j3_p1   = (1/np.sqrt(6))*np.array([  0,  0,  2,  0,  0,  0,  0,  0, -1,-1j])
-	j3_m1   = (1/np.sqrt(6))*np.array([  0,  0,  0,  1,-1j,  0,  0,  2,  0,  0])
-	j1_p1   = (1/np.sqrt(3))*np.array([  0,  0,  1,  0,  0,  0,  0,  0,  1, 1j])
-	j1_m1   = (1/np.sqrt(3))*np.array([  0,  0,  0, -1, 1j,  0,  0,  1,  0,  0])
-    
-        U = np.array([z2_up, x2y2_up, z2_dn, x2y2_dn, j3_p3, j3_m3, j3_p1, j3_m1, j1_p1, j1_m1])
-
-        if subset == "eg":
-            return np.eye((2,2))
-        if subset == "t2g":
-            # fix this format!
-            #return U[4:10,[2:5,7:10]]
-            pass
-        else:
-            return U
-
-def dm_cb2jb(dms, U = cb2jb()):
-	
-	return mathop.UOp(U, dms)
-
-def mag(dmat, axis = None):
-    """
-    This definition returns the magnetic moment calculated from the density matrix
-    """
-    l = int(len(dmat)/2)
-    mx = 2*real(np.trace(dmat[2*l+1:,:2*l+1])) 
-    my = 2*imag(np.trace(dmat[2*l+1:,:2*l+1])) 
-    mz = np.trace(dmat[:2*l+1,:2*l+1]) - np.trace(dmat[2*l+1:,2*l+1:]) 
-
-    if axis == "x":
-        return mx
-    if axis == "y":
-        return my
-    if axis == "z":
-        return mz
-    else:
-        return [mx, my, mz]

@@ -8,8 +8,8 @@ Defined here:
 """
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
-import scipy as np
-from sympy.functions.special.tensor_functions import KroneckerDelta
+import numpy as np
+
 
 def dagger(O):
 	'''
@@ -17,9 +17,10 @@ def dagger(O):
 
 		O_dagger = Transpose(conjugate(O))
 	'''
-	return np.transpose(np.conj(O))
+	return np.trans(np.conj(O))
 
-def UOp(U,O):
+
+def UOp(U, O):
 	'''
 	This method transform performs a unitary transformation over Operator O as:
 	
@@ -27,3 +28,19 @@ def UOp(U,O):
 	'''
 	
 	return np.dot(U,np.dot(O,dagger(U)))
+
+
+def expe_O(D, O):
+        # Not tested
+	'''
+	This definition calculates the Expectation value of an operator O as:
+	<A> = Tr(OD)       (if O is hermitian)
+	<A> = Tr((O^{+})D) (if O is non hermitian)
+	where D is the density matrix <c^{+}c>
+	'''
+	if (O == np.asmatrix(O)).all():
+		return np.trace(np.dot(O,D))
+	else:
+		return np.trace(np.dot(dagger(O),D))
+
+
