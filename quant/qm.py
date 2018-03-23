@@ -414,6 +414,7 @@ def dm_sb2cb(dms, U = sb2cb()):
 
 
 
+
 # Not tested with wien2k dmats
 # Not tested!!!
 def jb2ct2gb(orbital = None, ket = True):
@@ -480,6 +481,9 @@ def cb2jb(orbital = None, subset = None):
         else:
             return U
 
+def dm_cb2jb(dms, U = cb2jb()):
+	
+	return mathop.UOp(U, dms)
 
 def mag(dmat, axis = None):
     """

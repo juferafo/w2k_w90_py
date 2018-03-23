@@ -8,7 +8,7 @@ Defined here:
 """
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
-import numpy as np
+import scipy as np
 from sympy.functions.special.tensor_functions import KroneckerDelta
 
 def dagger(O):
@@ -25,4 +25,5 @@ def UOp(U,O):
 	
 		O' = U O U_dagger
 	'''
+	
 	return np.dot(U,np.dot(O,dagger(U)))
