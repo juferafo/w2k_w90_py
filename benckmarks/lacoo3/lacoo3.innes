@@ -1,0 +1,26 @@
+Graphite C K edge of first atom.
+1           (atom)
+1, 0        (n, l core)
+285       (E-Loss of 1st edge in eV)
+300   (energy of the incident electrons in keV)
+0.0 15.0 0.05        (minimum energy, energy step, maximum energy)
+5.0  1.87   (collection semiangle, convergence semiangle, both in mrad)
+5 2   (NR, NT, defining the integration mesh in the detector plane)
+0.5   (spectrometer broadening in eV)
+OUTPUT
+0                   (full output)
+DETECTOR POSITION
+0.0 0.0             (thetax, thetay)
+MODUS
+energy              (dscs wrt what?)
+SELECTION RULE
+n                   (selection rule)
+LSELECTION RULE
+d
+INITIALIZATION
+y y                (dos and xdos handling)
+y y                (handling of rotation matrices)
+QGRID
+U
+END
+

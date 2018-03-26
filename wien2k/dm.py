@@ -82,9 +82,9 @@ class dmat(object):
 	if axis == 'z':
 		return np.trace(self.matblock("UPUP")) - np.trace(self.matblock("DNDN"))
 	if axis == None:
-		return [2*np.real(np.trace(self.matblock("UPDN"))),\
-			2*np.imag(np.trace(self.matblock("UPDN"))),\
-			np.real(np.trace(self.matblock("UPUP"))) - np.real(np.trace(self.matblock("DNDN")))]
+		return np.array([2*np.real(np.trace(self.matblock("UPDN"))),\
+			         2*np.imag(np.trace(self.matblock("UPDN"))),\
+			         np.real(np.trace(self.matblock("UPUP"))) - np.real(np.trace(self.matblock("DNDN")))])
 
 
 

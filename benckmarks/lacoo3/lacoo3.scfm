@@ -1,0 +1,103 @@
+:CINT001 Core Integral Atom   1 Up   22.999414 Dn  22.999414 Total  45.998828
+:CINT002 Core Integral Atom   2 Up    5.997387 Dn   5.997387 Total  11.994775
+:CINT003 Core Integral Atom   3 Up    1.000000 Dn   1.000000 Total   2.000000
+
+       DENSITY AT NUCLEUS
+        JATOM        VALENCE       SEMI-CORE          CORE           TOTAL
+:RTO001:   1      500.303791        0.000000   535464.359751   535964.663542
+:RTO002:   2        6.036697        0.000000    17399.218557    17405.255254
+:RTO003:   3       15.042318        0.000000      299.383421      314.425739
+
+       HYPERFINE FIELDS FOR THOMSON RADIUS
+:HFF001:            0.000           0.000           0.000           0.000 (KGAUSS)
+:HFF002:            0.000           0.000           0.000           0.000 (KGAUSS)
+:HFF003:            0.000           0.000           0.000           0.000 (KGAUSS)
+     
+       CHARGES OF NEW CHARGE DENSITY
+:NTO   : INTERSTITIAL     UP =     3.610183 DN =     3.610183 TOT =     7.220366
+:NTO001: CHARGE SPHERE  1 UP =    26.890476 DN =    26.890476 TOT =    53.780952
+:NTO002: CHARGE SPHERE  2 UP =    12.521003 DN =    12.521003 TOT =    25.042006
+:NTO003: CHARGE SPHERE  3 UP =     3.658377 DN =     3.658377 TOT =     7.316754
+
+:NEC01: NUCLEAR AND ELECTRONIC CHARGE    108.00000   107.99359
+     
+       CHARGES OF OLD CHARGE DENSITY
+:OTO   : INTERSTITIAL     UP =     3.613059 DN =     3.613059 TOT =     7.226119
+:OTO001: CHARGE SPHERE  1 UP =    26.891368 DN =    26.891368 TOT =    53.782737
+:OTO002: CHARGE SPHERE  2 UP =    12.520676 DN =    12.520676 TOT =    25.041352
+:OTO003: CHARGE SPHERE  3 UP =     3.658299 DN =     3.658299 TOT =     7.316598
+
+:NEC02: NUCLEAR AND ELECTRONIC CHARGE    108.00000   108.00000
+     
+       CONVERGENCE TEST
+:DTO001: DIFFERENCE SPHERE  1 UP =  0.0010416 DN =  0.0010416 TOT =  0.0020831
+:DTO002: DIFFERENCE SPHERE  2 UP =  0.0006520 DN =  0.0006520 TOT =  0.0013040
+:DTO003: DIFFERENCE SPHERE  3 UP =  0.0000821 DN =  0.0000821 TOT =  0.0001643
+
+:DIS  :  CHARGE DISTANCE       (  0.001042 for atom    1 spin 2)       0.001552
+ 
+******************************************************
+* MULTISECANT MIXING VER7 RELEASE 7.1.2              *
+* Standard Mode with controls                        *
+* Upper Bound on PW scaling active                   *
+* Regularization       1.000E-04                     *
+* Greed Lower Bound    2.500E-02                     *
+* Trust Upper Limit    1.200E+01                     *
+* Charge change trust active                         *
+* Max Number of Memory Steps    8                    *
+******************************************************
+ 
+:INFO : Forcing a restart
+:PLANE:  INTERSTITIAL TOTAL      2.75062 DISTAN  3.190E-02 % 
+:CHARG:  CLM CHARGE   /ATOM     88.19331 DISTAN  3.031E-03 % 
+
+Step History
+      DMIX        Red     Pred      Trust     Lambda    MagRel    MagAbs     Beta
+  1  3.50E-02 -1.00E+00  1.00E+00 -1.00E+01  1.00E+00  3.50E-02  3.50E-02  1.00E+00
+:INFO :  Note, Pratt in use
+:DIRM :  MEMORY  0/ 8 RESCALE    1.00
+:MIX  :   PRATT  REGULARIZATION: 1.00E-04  GREED: 0.1500
+     
+       CHARGES OF MIXED CHARGE DENSITY
+:CTO   : INTERSTITIAL     UP =     3.613109 DN =     3.613109 TOT =     7.226218
+:CTO001: CHARGE SPHERE  1 UP =    26.891235 DN =    26.891235 TOT =    53.782469
+:CTO002: CHARGE SPHERE  2 UP =    12.520725 DN =    12.520725 TOT =    25.041450
+:CTO003: CHARGE SPHERE  3 UP =     3.658311 DN =     3.658311 TOT =     7.316621
+
+       SPIN MAGNETIC MOMENTS OF MIXED CHARGE DENSITY
+:MMINT:  MAGNETIC MOMENT IN INTERSTITIAL  =   -0.00000
+:MMI001: MAGNETIC MOMENT IN SPHERE   1    =   -0.00000
+:MMI002: MAGNETIC MOMENT IN SPHERE   2    =   -0.00000
+:MMI003: MAGNETIC MOMENT IN SPHERE   3    =   -0.00000
+:MMTOT:  SPIN MAGNETIC MOMENT IN CELL     =   -0.00000
+
+:NEC03: NUCLEAR AND ELECTRONIC CHARGE    108.00000   108.00000
+
+PW CHANGE     H    K    L      Current       Change    Residue
+:PUP001:      0    0    0  3.49931415E-02  9.944E-07  6.629E-06
+:PUP002:     -1    0    0  1.25356836E-02 -4.158E-07 -2.772E-06
+:PUP003:     -1   -1    0  4.48781920E-02 -4.296E-07 -2.864E-06
+:PUP004:     -1   -1   -1  7.46541587E-02  3.783E-06  2.522E-05
+:PUP005:     -2    0    0  4.32905307E-02  2.594E-06  1.729E-05
+:PUP006:     -2   -1    0  1.13590346E-02 -1.881E-06 -1.254E-05
+:PUP007:     -2   -1   -1  6.59668529E-03 -1.001E-06 -6.674E-06
+:PUP008:     -2   -2    0  1.49611586E-02  2.416E-06  1.611E-05
+:PUP009:     -3    0    0  1.66376487E-03 -1.940E-07 -1.293E-06
+:PUP010:     -2   -2   -1  3.86891678E-03 -1.571E-06 -1.047E-05
+:PUP011:     -3   -1    0 -7.47945313E-03 -1.300E-06 -8.665E-06
+:PUP012:     -3   -1   -1  9.90707831E-03  3.236E-06  2.157E-05
+:PDN001:      0    0    0  3.49931415E-02  9.944E-07  6.629E-06
+:PDN002:     -1    0    0  1.25356836E-02 -4.158E-07 -2.772E-06
+:PDN003:     -1   -1    0  4.48781920E-02 -4.296E-07 -2.864E-06
+:PDN004:     -1   -1   -1  7.46541587E-02  3.783E-06  2.522E-05
+:PDN005:     -2    0    0  4.32905307E-02  2.594E-06  1.729E-05
+:PDN006:     -2   -1    0  1.13590346E-02 -1.881E-06 -1.254E-05
+:PDN007:     -2   -1   -1  6.59668530E-03 -1.001E-06 -6.674E-06
+:PDN008:     -2   -2    0  1.49611586E-02  2.416E-06  1.611E-05
+:PDN009:     -3    0    0  1.66376487E-03 -1.940E-07 -1.293E-06
+:PDN010:     -2   -2   -1  3.86891679E-03 -1.571E-06 -1.047E-05
+:PDN011:     -3   -1    0 -7.47945313E-03 -1.300E-06 -8.665E-06
+:PDN012:     -3   -1   -1  9.90707831E-03  3.236E-06  2.157E-05
+
+:ENE  : ********** TOTAL ENERGY IN Ry =       -20214.03317151
+

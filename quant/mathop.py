@@ -17,7 +17,7 @@ def dagger(O):
 
 		O_dagger = Transpose(conjugate(O))
 	'''
-	return np.trans(np.conj(O))
+	return np.transpose(np.conj(O))
 
 
 def UOp(U, O):

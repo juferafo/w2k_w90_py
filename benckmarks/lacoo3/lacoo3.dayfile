@@ -1,0 +1,25 @@
+
+Calculating lacoo3 in /home/afonso/lacoo3
+on exmag-afonso with PID 19480
+using  in /home/afonso/WIEN2k_16
+lacoo3.broyd* files removed !
+
+
+    start 	(Wed Sep  6 14:27:49 CEST 2017) with lapw0 (1/150 to go)
+
+    cycle 1 	(Wed Sep  6 14:27:49 CEST 2017) 	(1/150 to go)
+
+>   lapw0 	(14:27:49) 1.4u 0.0s 0:01.48 100.0% 0+0k 0+664io 0pf+0w
+>   lapw1  -up    	(14:27:50) 2.7u 0.1s 0:02.84 99.2% 0+0k 8+14672io 0pf+0w
+>   lapw1  -dn    	(14:27:53) 2.7u 0.0s 0:02.82 99.6% 0+0k 0+14680io 0pf+0w
+>   lapw2 -up   	(14:27:56) 1.5u 0.0s 0:01.56 99.3% 0+0k 8+960io 0pf+0w
+>   lapw2 -dn   	(14:27:58) 1.5u 0.0s 0:01.59 98.7% 0+0k 16+968io 0pf+0w
+>   lcore -up	(14:27:59) 0.0u 0.0s 0:00.01 100.0% 0+0k 0+352io 0pf+0w
+>   lcore -dn	(14:27:59) 0.0u 0.0s 0:00.01 100.0% 0+0k 0+352io 0pf+0w
+>   mixer 	(14:27:59) 0.0u 0.0s 0:00.05 100.0% 0+0k 0+2448io 0pf+0w
+:ENERGY convergence:  0 0.0001 .0002236600000000
+:CHARGE convergence:  0 0.0000 .001042
+
+>   energy in SCF NOT CONVERGED
+
+>   stop

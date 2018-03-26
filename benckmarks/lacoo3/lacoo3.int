@@ -1,0 +1,12 @@
+Title
+ -0.50 0.002 1.500 0.003  # EMIN, DE, EMAX, Gauss-broadening(>de)
+  3    N   0.000          # NUMBER OF DOS-CASES below, G/L/B broadening (Ry)
+    2    4   d-tot     # atom, case=column in qtl-header, label
+    2    5   d-eg 
+    2    6   d-t2g
+SUM: 0 2                     # NUMBER OF SUMMATIONS, max-nr-of summands
+2 5                      # this sums dos-cases 2+5 from the input above       
+
+
+
+

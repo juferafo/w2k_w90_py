@@ -3,7 +3,9 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
 import sys
+import re
 import numpy as np
+
 
 """
 Coded by Juan Fernandez Afonso
@@ -233,17 +235,68 @@ class wien2k(object):
 	else:
 	    print("ERROR: "+self.case+".int file does not exist")
 
-
-
-
-
-
-
-
-def struct_lat(case, ext='struct'):
+    def strlat(self, structure = None):
         '''
         This method returns the lattice parameters of the given case.struct file
+        
+        Possible update: Read the spacegroup!
         '''
+
+        if structure:
+            fstr = structure
+        else:
+            fstr = self.case+".struct"
+
+	if os.path.exists(fstr):
+                with open(fstr) as fstr:
+			lstr = fstr.readlines()
+		
+                decp = 6
+                st = {}
+                lat_sym = lstr[1].split()
+		st['lattice_type'] = lat_sym[0]
+               
+		units = lstr[2].split()[-1].split('=')[1]
+		st['units'] = units 
+                
+                rlat = re.compile(u'\d{,3}\.\d{6}')
+                lat  = re.findall(rlat,lstr[3])
+                st['lattice_vectors'] = lat[:3]
+                st['lattice_angles']  = lat[3:]
+
+		return st
+
+        else:
+		print("ERROR: "+case+"."+ext+" file does not exist")
+
+    def atpos(self, structure = None):
+        if structure:
+            fstr = structure
+        else:
+            fstr = self.case+".struct"
+
+	if os.path.exists(fstr):
+            with open(fstr) as fstr:
+                lstr = fstr.readlines()[4:]
+	    
+            ap = {}
+            
+            for l in lstr:
+                rat = re.compile(u'^ATOM')
+                if re.match(rat,l):
+                    rpos = re.compile(u'\d{1,}\.\d{8}')
+                    atpos = re.findall(rpos, l)
+                    
+                    mult = re.findall('\d{1}',lstr[lstr.index(l)+1])[0]
+                    mult = int(mult)
+
+                    nat = re.findall('^(\S*)', lstr[lstr.index(l)+1+mult])[0]
+                    print(atpos)
+                    print(nat)
+
+
+'''
+    def struct_lat(case, ext='struct'):
 
         # -------> Bug in situations like:  10.254130 10.254130 24.549440 90.000000 90.000000120.000000
         # -------> Not corrected yet!
@@ -258,7 +311,9 @@ def struct_lat(case, ext='struct'):
                 
                 neqat = lat_sym[lat_sym.index('LATTICE,NONEQUIV.ATOMS:')+1]
 		st['eq_atoms'] = int(float(neqat)) 
-	
+                
+
+
 		units = lstruct[2].split()[-1].split('=')[1]
 		st['units'] = units 
                 
@@ -272,7 +327,7 @@ def struct_lat(case, ext='struct'):
 	else:
 		print("ERROR: "+case+"."+ext+" file does not exist")
 
-
+'''
 
 
 
@@ -329,6 +384,5 @@ def natdm(case, c=False):
 		return UJ, iat_nl 
 
 	else:
-                print("ERROR: "+case+".inorb file does not exist"
-
-	'''
+                rint("ERROR: "+case+".inorb file does not exist"
+        '''

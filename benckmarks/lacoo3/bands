@@ -1,0 +1,5 @@
+x lapw0
+x lapw1 -up -band
+x lapw1 -dn -band
+x lapw2 -up -band -qtl 
+x lapw2 -dn -band -qtl

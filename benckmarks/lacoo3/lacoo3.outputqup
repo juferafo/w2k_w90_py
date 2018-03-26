@@ -1,0 +1,442 @@
+ ******Program QTL: projected DOS or population matrix******
+ Running QTL in single processor mode
+  
+ Projected density of states calculation for  3 atoms
+ Energy window:   -9.0000 < E <      3.000
+
+
+
+
+                              --------------------------------------------------
+                                 S T R U C T U R A L   I N F O R M A T I O N
+                              --------------------------------------------------
+
+
+   SUBSTANCE                    = laco3                                                                           
+
+   LATTICE                      = P   
+   LATTICE CONSTANTS ARE        =    7.2620900   7.2620900   7.2620900
+   NUMBER OF ATOMS IN UNITCELL  =   3
+   MODE OF CALCULATION IS       = RELA
+  BR1,  BR2
+   0.86520  -0.00000  -0.00000      0.86520  -0.00000  -0.00000
+   0.00000   0.86520  -0.00000      0.00000   0.86520  -0.00000
+   0.00000   0.00000   0.86520      0.00000   0.00000   0.86520
+ IORD=          48
+ atom  1; type   1; qsplit=  5; for L=  0  1  2  3
+ Symmetrization over eq. k-points is not performed
+ allowed for invariant DOS
+ L=  0. Unitary transformation to real basis
+  Real part of unitary matrix
+   1.0000
+  Imaginary part of unitary matrix
+   0.0000
+ L=  1. Unitary transformation to real basis
+  Real part of unitary matrix
+   0.7071   0.0000   0.7071
+   0.0000   0.0000   0.0000
+   0.0000   1.0000   0.0000
+  Imaginary part of unitary matrix
+   0.0000   0.0000   0.0000
+   0.7071   0.0000  -0.7071
+   0.0000   0.0000   0.0000
+ L=  2. Unitary transformation to real basis
+  Real part of unitary matrix
+   0.7071   0.0000   0.0000   0.0000   0.7071
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.7071   0.0000   0.7071   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.0000   1.0000   0.0000   0.0000
+  Imaginary part of unitary matrix
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.7071   0.0000   0.0000   0.0000  -0.7071
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.7071   0.0000  -0.7071   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000
+ L=  3. Unitary transformation to real basis
+  Real part of unitary matrix
+   0.7071   0.0000   0.0000   0.0000   0.0000   0.0000   0.7071
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.7071   0.0000   0.0000   0.0000   0.7071   0.0000
+   0.0000   0.0000   0.0000   1.0000   0.0000   0.0000   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.7071   0.0000   1.0000   0.0000   0.7071   0.0000
+  Imaginary part of unitary matrix
+   0.0000   0.7071   0.0000   0.0000   0.0000  -0.7071   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.7071   0.0000   0.0000   0.0000  -0.7071   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000   0.0000
+ incorrect normalization  -3  -3     2.00000     0.00000
+ incorrect orthogonality  -3   0     1.00000     0.00000
+ incorrect normalization  -2  -2     0.00000     0.00000
+ incorrect orthogonality  -1   3     1.00000     0.00000
+ incorrect orthogonality   0  -3     1.00000     0.00000
+ incorrect normalization   0   0     2.00000     0.00000
+ incorrect orthogonality   0   3     1.00000     0.00000
+ incorrect normalization   1   1     0.00000     0.00000
+ incorrect normalization   2   2     0.00000     0.00000
+ incorrect orthogonality   3  -1     1.00000     0.00000
+ incorrect orthogonality   3   0     1.00000     0.00000
+ incorrect normalization   3   3     2.00000     0.00000
+ atom  2; type   2; qsplit=  5; for L=  0  1  2
+ Symmetrization over eq. k-points is not performed
+ allowed for invariant DOS
+ L=  0. Unitary transformation to real basis
+  Real part of unitary matrix
+   1.0000
+  Imaginary part of unitary matrix
+   0.0000
+ L=  1. Unitary transformation to real basis
+  Real part of unitary matrix
+   0.7071   0.0000   0.7071
+   0.0000   0.0000   0.0000
+   0.0000   1.0000   0.0000
+  Imaginary part of unitary matrix
+   0.0000   0.0000   0.0000
+   0.7071   0.0000  -0.7071
+   0.0000   0.0000   0.0000
+ L=  2. Unitary transformation to real basis
+  Real part of unitary matrix
+   0.7071   0.0000   0.0000   0.0000   0.7071
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.7071   0.0000   0.7071   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.0000   1.0000   0.0000   0.0000
+  Imaginary part of unitary matrix
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.7071   0.0000   0.0000   0.0000  -0.7071
+   0.0000   0.0000   0.0000   0.0000   0.0000
+   0.0000   0.7071   0.0000  -0.7071   0.0000
+   0.0000   0.0000   0.0000   0.0000   0.0000
+ atom  3; type   3; qsplit=  3; for L=  0  1
+ Symmetrization over eq. k-points is not performed
+ allowed for invariant DOS
+ L=  0. Unitary transformation to real basis
+  Real part of unitary matrix
+   1.0000
+  Imaginary part of unitary matrix
+   0.0000
+ L=  1. Unitary transformation to real basis
+  Real part of unitary matrix
+   0.7071   0.0000   0.7071
+   0.0000   0.0000   0.0000
+   0.0000   1.0000   0.0000
+  Imaginary part of unitary matrix
+   0.0000   0.0000   0.0000
+   0.7071   0.0000  -0.7071
+   0.0000   0.0000   0.0000
+  Calculation for atom           1
+
+          ATOMIC PARAMETERS FOR La        
+
+           ENERGY PARAMETERS ARE  -1.72  -0.42   0.44   0.44
+
+           L     U(R)          U'(R)         DU/DE        DU'/DE      NORM-U'
+           0  0.168774E+00 -0.233873E+00 -0.340882E+00 -0.475632E+00
+           1 -0.212290E+00  0.300061E+00  0.264411E+00  0.380002E+00
+           2  0.454396E+00 -0.251476E-01 -0.136267E+00 -0.344602E+00
+           3  0.365427E+00  0.129891E+00 -0.445125E+00 -0.596142E+00
+LO COEFFICIENT: l,A,B,C   0          0.97656     0.48351     0.00000     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   0          0.83535     0.00000     0.29002     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   1          0.96340     0.77349     0.00000     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   1          0.42623     0.00000     0.60469     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   2          0.86444     2.88257     0.00000     0.00000
+ 
+ L1=           0  L2=           0
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           1           3                 1           1  0.450078258833015     
+           2           2                 1           1  0.198171378632190     
+           2           3                 1           1  0.393294364262344     
+           3           1                 1           1  0.450078258833015     
+           3           2                 1           1  0.393294364262344     
+           3           3                 1           1   1.00000000000000     
+ L1=           1  L2=           1
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           1           3                 1           1  0.878192017058865     
+           2           2                 1           1  0.120104995706145     
+           2           3                 1           1  0.165429276657019     
+           3           1                 1           1  0.878192017058865     
+           3           2                 1           1  0.165429276657019     
+           3           3                 1           1   1.00000000000000     
+ L1=           2  L2=           2
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           2           2                 1           1  3.041681059591015E-002
+ L1=           3  L2=           3
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           2           2                 1           1  0.506199314250692     
+ NUMBER OF K-POINTS:          56
+           1          44 bands
+           2          45 bands
+           3          45 bands
+           4          45 bands
+           5          47 bands
+           6          47 bands
+           7          45 bands
+           8          46 bands
+           9          46 bands
+          10          46 bands
+          11          47 bands
+          12          46 bands
+          13          46 bands
+          14          46 bands
+          15          47 bands
+          16          46 bands
+          17          45 bands
+          18          45 bands
+          19          44 bands
+          20          45 bands
+          21          45 bands
+          22          46 bands
+          23          46 bands
+          24          46 bands
+          25          46 bands
+          26          47 bands
+          27          46 bands
+          28          46 bands
+          29          46 bands
+          30          47 bands
+          31          46 bands
+          32          47 bands
+          33          47 bands
+          34          47 bands
+          35          47 bands
+          36          47 bands
+          37          46 bands
+          38          46 bands
+          39          47 bands
+          40          47 bands
+          41          47 bands
+          42          47 bands
+          43          47 bands
+          44          47 bands
+          45          47 bands
+          46          47 bands
+          47          47 bands
+          48          47 bands
+          49          47 bands
+          50          47 bands
+          51          47 bands
+          52          47 bands
+          53          47 bands
+          54          47 bands
+          55          47 bands
+          56          47 bands
+  Calculation for atom           2
+
+          ATOMIC PARAMETERS FOR Co        
+
+           ENERGY PARAMETERS ARE   0.44   0.44   0.49   0.44
+
+           L     U(R)          U'(R)         DU/DE        DU'/DE      NORM-U'
+           0 -0.722905E+00  0.577931E-01  0.883472E-01  0.360491E+00
+           1  0.796580E+00  0.341841E+00 -0.530660E-01 -0.356354E+00
+           2  0.239953E+00 -0.268043E+00 -0.493109E+00 -0.556709E+00
+           3  0.100848E+01  0.120814E+01 -0.567477E-01 -0.331455E+00
+LO COEFFICIENT: l,A,B,C   0          0.83178     6.80607     0.00000     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   1          0.52578     7.89259     0.00000     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   1          0.13938     0.00000     0.96708     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   2          0.96981     0.47192     0.00000     0.00000
+ 
+ L1=           0  L2=           0
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           1           3                 1           1  0.139209544552566     
+           2           2                 1           1  6.652124518299462E-003
+           2           3                 1           1 -6.037512174740179E-002
+           3           1                 1           1  0.139209544552566     
+           3           2                 1           1 -6.037512174740179E-002
+           3           3                 1           1  0.724850041673741     
+ L1=           1  L2=           1
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           1           3                 1           1  0.168148200436543     
+           2           2                 1           1  1.161531843395734E-002
+           2           3                 1           1 -8.708941600361642E-002
+           3           1                 1           1  0.168148200436543     
+           3           2                 1           1 -8.708941600361642E-002
+           3           3                 1           1   1.00000000000000     
+ L1=           2  L2=           2
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           2           2                 1           1  0.266990360760129     
+ L1=           3  L2=           3
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           2           2                 1           1  2.204529576577529E-003
+ NUMBER OF K-POINTS:          56
+           1          44 bands
+           2          45 bands
+           3          45 bands
+           4          45 bands
+           5          47 bands
+           6          47 bands
+           7          45 bands
+           8          46 bands
+           9          46 bands
+          10          46 bands
+          11          47 bands
+          12          46 bands
+          13          46 bands
+          14          46 bands
+          15          47 bands
+          16          46 bands
+          17          45 bands
+          18          45 bands
+          19          44 bands
+          20          45 bands
+          21          45 bands
+          22          46 bands
+          23          46 bands
+          24          46 bands
+          25          46 bands
+          26          47 bands
+          27          46 bands
+          28          46 bands
+          29          46 bands
+          30          47 bands
+          31          46 bands
+          32          47 bands
+          33          47 bands
+          34          47 bands
+          35          47 bands
+          36          47 bands
+          37          46 bands
+          38          46 bands
+          39          47 bands
+          40          47 bands
+          41          47 bands
+          42          47 bands
+          43          47 bands
+          44          47 bands
+          45          47 bands
+          46          47 bands
+          47          47 bands
+          48          47 bands
+          49          47 bands
+          50          47 bands
+          51          47 bands
+          52          47 bands
+          53          47 bands
+          54          47 bands
+          55          47 bands
+          56          47 bands
+  Calculation for atom           3
+
+          ATOMIC PARAMETERS FOR O         
+
+           ENERGY PARAMETERS ARE  -0.56   0.44   0.44   0.44
+
+           L     U(R)          U'(R)         DU/DE        DU'/DE      NORM-U'
+           0 -0.372802E+00  0.607854E+00  0.292003E+00  0.485703E+00
+           1  0.425483E+00 -0.480857E+00 -0.313085E+00 -0.488956E+00
+           2  0.111052E+01  0.960821E+00 -0.716301E-01 -0.384859E+00
+           3  0.132981E+01  0.211345E+01 -0.445334E-01 -0.340407E+00
+LO COEFFICIENT: l,A,B,C   0          0.95922     1.22464     0.00000     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   0          0.17111     0.00000     0.83822     0.00000
+ 
+LO COEFFICIENT: l,A,B,C   1          0.94222     1.28048     0.00000     0.00000
+ 
+ L1=           0  L2=           0
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           1           3                 1           1  0.934675634863886     
+           2           2                 1           1  5.327488995860014E-002
+           2           3                 1           1  8.197461947580272E-002
+           3           1                 1           1  0.934675634863886     
+           3           2                 1           1  8.197461947580272E-002
+           3           3                 1           1   1.00000000000000     
+ L1=           1  L2=           1
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           1           3                 1           1 -0.800631873422598     
+           2           2                 1           1  6.844725566374445E-002
+           2           3                 1           1 -6.369082653873677E-002
+           3           1                 1           1 -0.800631873422598     
+           3           2                 1           1 -6.369082653873677E-002
+           3           3                 1           1  0.856845492587117     
+ L1=           2  L2=           2
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           2           2                 1           1  2.529337499925058E-003
+ L1=           3  L2=           3
+ RADIAL INTEGRALS:
+           1           1                 1           1   1.00000000000000     
+           2           2                 1           1  7.688685464864787E-004
+ NUMBER OF K-POINTS:          56
+           1          44 bands
+           2          45 bands
+           3          45 bands
+           4          45 bands
+           5          47 bands
+           6          47 bands
+           7          45 bands
+           8          46 bands
+           9          46 bands
+          10          46 bands
+          11          47 bands
+          12          46 bands
+          13          46 bands
+          14          46 bands
+          15          47 bands
+          16          46 bands
+          17          45 bands
+          18          45 bands
+          19          44 bands
+          20          45 bands
+          21          45 bands
+          22          46 bands
+          23          46 bands
+          24          46 bands
+          25          46 bands
+          26          47 bands
+          27          46 bands
+          28          46 bands
+          29          46 bands
+          30          47 bands
+          31          46 bands
+          32          47 bands
+          33          47 bands
+          34          47 bands
+          35          47 bands
+          36          47 bands
+          37          46 bands
+          38          46 bands
+          39          47 bands
+          40          47 bands
+          41          47 bands
+          42          47 bands
+          43          47 bands
+          44          47 bands
+          45          47 bands
+          46          47 bands
+          47          47 bands
+          48          47 bands
+          49          47 bands
+          50          47 bands
+          51          47 bands
+          52          47 bands
+          53          47 bands
+          54          47 bands
+          55          47 bands
+          56          47 bands
+
+
+   =====>>> CPU TIME SUMMARY
+
+            TOTAL       :      2.5

@@ -1,0 +1,20 @@
+ Ordering of DOS in QTL file for: laco3                                                       
+
+ atom   1 ordering of projected DOS 
+s,                                                                
+p, cubic                                                          
+d,d-eg,d-t2g, cubic                                               
+f,A2,T1,T2, cubic                                                 
+               A2=xyz  x(T1)=x(x2-3r2/5)  y(T1)=y(y2-3r2/5)  z(T1)=z(z2-3r2/5)      
+             ksi(T2)=x(y2-z2)   eta(T2)=y(z2-y2)   zeta(T2)=z(x2-y2)              
+ 
+ atom   2 ordering of projected DOS 
+s,                                                                
+p, cubic                                                          
+d,d-eg,d-t2g, cubic                                               
+ 
+ atom   3 ordering of projected DOS 
+s,                                                                
+p,pxy,pz, axial basis                                             
+ 
+ Data for interstital DOS correspond to atom index    4
