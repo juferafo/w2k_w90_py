@@ -22,6 +22,8 @@ module was used to prevent compatibility problems with Python3.
 
 ## Usage
 
-## Importing the package
+### Importing the package
 
-## Short test case
+### Short test case
+
+## Bibliography
