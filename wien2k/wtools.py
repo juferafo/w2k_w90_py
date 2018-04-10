@@ -297,47 +297,17 @@ class wtools(winput.wien2k):
 	else:
 		return dmts[iatom]
 
-
-def get_case():
-    return None
-
-
-
-
-def get_conv(case=get_case()):
+    # TESTED!
+    def conviter(self, param='CHARGE'):
         '''
         This method returns the convergence of the calculation
         '''
-	if os.path.exists(case+".dayfile"):
-		with open(case+".dayfile") as df:
-		    ldf = df.readlines()
-
-		c = {}
-                be = False
-                bc = False
-                for i in range(len(ldf)-1,-1,-1):
-                    if 'CHARGE' in ldf[i]: 
-		        ch = ldf[i].split()[-1]
-		        c['CHARGE'] = float(ch)
-                        bc = True
-                    if 'ENERGY' in ldf[i]: 
-		        cene = ldf[i].split()[-1]
-		        c['ENERGY'] = float(cene)
-                        be = True
-                    if bc and be:
-                        break
-                return c
-	else:
-		print("ERROR: "+case+".dayfile file does not exist")
-
-
-
-def conviter(case=get_case(), param='CHARGE'):
-        '''
-        This method returns the convergence of the calculation
-        '''
-	if os.path.exists(case+".dayfile"):
-		with open(case+".dayfile") as df:
+        if param not in ['CHARGE', 'ENERGY']:
+	    print("ERROR: param variable not correct in wtools.conviter")
+            return None
+	
+        if os.path.exists(self.case+".dayfile"):
+		with open(self.case+".dayfile") as df:
 		    ldf = df.readlines()
                 
                 c = []
@@ -345,27 +315,61 @@ def conviter(case=get_case(), param='CHARGE'):
                     if param in l: 
 		        ci = l.split()[-1]
 		        c.append(ci)
+
                 return np.asarray(c, dtype=np.float64) 
 	else:
-		print("ERROR: "+case+".dayfile file does not exist")
+		print("ERROR: "+self.case+".dayfile file does not exist")
 
 
+    # TESTED!
+    def conv(self, param='CHARGE'):
+        '''
+        This method returns the convergence of the last iteration
+        '''
+        if param not in ['CHARGE', 'ENERGY']:
+	    print("ERROR: param variable not correct in wtools.conv")
+            return None
 
-def convplot(case=get_case(), param='CHARGE', dots='ro-', show=True):
-    '''
-    This method plot the evolution of the energy with the iteration number
-    '''
+	if os.path.exists(self.case+".dayfile"):
+		with open(self.case+".dayfile") as df:
+		    ldf = df.readlines()
 
-    import matplotlib.pyplot as plt
+                for i in range(len(ldf)-1,-1,-1):
+                    if param in ldf[i]: 
+		        c = ldf[i].split()[-1]
+                        return float(c)
+
+	else:
+		print("ERROR: "+self.case+".dayfile file does not exist")
+
+
+    # Bug: the figure cuts the yaxis title
+    def convplot(self, param='CHARGE', dots='ro-', show=True, save = True):
+        '''
+        This method plot the evolution of the energy with the iteration number
+        '''
+    
+        import matplotlib.pyplot as plt
      
-    conv = conviter(case, param)
-    fig = plt.figure()
-    plt.title(param+' convergence '+case+'.dayfile')
-    plt.xlabel('# iteration')
-    plt.ylabel(param+' convergence')
-    plt.plot(conv, dots)
-    if show:
-        plt.show()
+        conv = wtools().conviter(param)
+        fig = plt.figure()
+        plt.title(self.case+' '+param+' convergence\n'+self.case+'.dayfile')
+        plt.xlabel('# iteration')
+        plt.ylabel(param+' convergence')
+        plt.plot(conv, dots)
+        
+        if save:
+            fig.savefig('./conv_'+param+'.png', bbox_inches='tight')
+        if show:
+            plt.show()
+
+
+
+
+def get_case():
+    return None
+
+
 
 
 # Maybe is not necesary!

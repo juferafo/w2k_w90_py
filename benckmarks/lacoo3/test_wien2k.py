@@ -8,11 +8,12 @@ HOME = os.path.expanduser("~")
 sys.path.insert(0, HOME+'/bin/lib')
 
 import wien2k.winput as win
+import wien2k.wtools as wt
 
 
 # We generate the wien2k object
 case = win.wien2k(sp = True)
-
+wout = wt.wtools(case)
 '''
         Correct and add descriptions for each definition
             This class defines a wien2k calculation object. From it we can obtain information both
@@ -34,6 +35,14 @@ vxc = case.vxc()
 RK  = case.RK()
 klist = case.klist()
 
+'''
+To be corrected!
 lat = case.strlat(structure = "lacoo3.struct")
 lat = case.atpos(structure = "lacoo3.struct")
 print(lat)
+'''
+
+# Testing convergence
+conv = wout.conviter(param = "ENERGY")
+print(conv)
+wout.convplot()
