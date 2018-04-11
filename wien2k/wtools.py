@@ -489,29 +489,6 @@ def dos_plot(e_min, e_max, case=get_case(), spin='up', units='eV', show=True, sa
 		print("Not possible to read input for DOS plot")
 
 
-def mag(dmuu, dmdd, dmud ,axis=None):
-	'''
-	This definition returns the magnetic moment calculated from the density matrix D
-	'''
-	
-	if dmuu == '' or dmdd == '' or dmud == '':
-		print('No density matrix provided to wtools.py in: def mag(dm='',axis=None)')
-		return None
-
-	sys.path.insert(0, '/home/lv70946/afonso/bin/libraries')
-	from qm import pauli
-
-	if axis == 'x':
-		return 2*np.real(np.trace(dmud))
-	if axis == 'y':
-		return 2*np.imag(np.trace(dmud))
-	if axis == 'z':
-		return (np.trace(dmuu) - np.trace(dmdd))
-	if axis == None:
-		return [2*np.real(np.trace(dmud)),\
-			2*np.imag(np.trace(dmud)),\
-			(np.trace(dmuu) - np.trace(dmdd))]
-
 def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
 	# This definition only is tested for cases with SOC for rotated and non rotated systems!
 	# This is for: case.scfdmup and case.scfdmrotup
@@ -562,10 +539,6 @@ def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
 #    TESTED UNTIL HERE           #
 ##################################
 ##################################
-
-def scfdm():
-	for s in ['up', 'ud', 'dn']:
-		return None
 
 def scfvorb(case, spin = ''):
 	if os.path.exists(case+'.scforb'+spin):
@@ -655,54 +628,6 @@ def vorb(case, spin = ''):
 	else:
 		print("ERROR: "+case+".vorb"+spin+" file does not exist")
 		return None
-
-
-
-def get_mag(case, at, comp = 'full'):
-	"""
-	Calculate the magnetic moments from the density matrices in case.dmat(up/dn/ud) files
-	"""
-	m = np.zeros(3)
-	
-	dm_UU = def_read(case, spin = 'up')
-	dm_DD = def_read(case, spin = 'dn')
-
-	if os.path.exists(case+'.'++'dmatud'):
-		dm_UD = def_read(case, spin = 'ud')
-		m[0] = 2*np.trace(dm_UD)
-		m[1] = 2*(-1j)*np.trace(dm_UD)
-	else:
-		m[0] = 0
-		m[1] = 0
-
-	m[2] = np.trace(dm_UU) - np.trace(dm_DD)
-	print(m)
-	if comp == 'x_axis':
-		return np.asarray(m)[0]
-	if comp == 'y_axis':
-		return np.asarray(m)[1]
-	if comp == 'z_axis':
-		return np.asarray(m)[2]
-	else:
-		return np.asarray(m)
-
-
-
-# similar to build dm in ~/bin/dmat_mag.py
-def full_dmat(case):
-	return None
-
-
-def scfdmiter(case):
-	return None
-
-def restart_case(path='./', rm_scf=False):
-        case = get_case()
-        cd(path)
-        sh('clean_lapw -s')
-        sh('rm '+case+'.*_unmixed')
-        if rm_scf:
-            sh('rm '+case+'.scf*')
 
 def join_line_dmat(line_dmat):
         '''
