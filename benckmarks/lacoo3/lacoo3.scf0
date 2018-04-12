@@ -7,7 +7,7 @@
 
 
             ---------
-:ITE035: 35. ITERATION
+:ITE036: 36. ITERATION
             ---------
 
 :NATO :    3 INDEPENDENT AND    5 TOTAL ATOMS IN UNITCELL
@@ -18,21 +18,21 @@
 :LAT  : LATTICE CONSTANTS=  7.26209  7.26209  7.26209    1.571    1.571    1.571
 :VOL  : UNIT CELL VOLUME =     382.98775
        MODE OF CALCULATION IS       = RELA
-       NON-SPINPOLARIZED CALCULATION
+       SPINPOLARIZED CALCULATION
 :IFFT  : FFT-parameters:   60   60   60 Factor: 2.00
-       ATOMNUMBER=  1 La         VCOUL-ZERO =  0.32762E+00
-       ATOMNUMBER=  2 Co         VCOUL-ZERO =  0.38585E+00
-       ATOMNUMBER=  3 O          VCOUL-ZERO =  0.68243E+00
-:EFG003:                        EFG         =    10.88667   *10**21  V / m**2
-                               V20  TOT/SRF=     9.42813     0.69258
+       ATOMNUMBER=  1 La         VCOUL-ZERO =  0.32780E+00
+       ATOMNUMBER=  2 Co         VCOUL-ZERO =  0.38557E+00
+       ATOMNUMBER=  3 O          VCOUL-ZERO =  0.68240E+00
+:EFG003:                        EFG         =    10.88548   *10**21  V / m**2
+                               V20  TOT/SRF=     9.42711     0.69327
                                V22  TOT/SRF=     0.00000     0.00000
                                V22M TOT/SRF=     0.00000     0.00000
                                V21  TOT/SRF=     0.00000     0.00000
                                V21M TOT/SRF=     0.00000     0.00000
 
-             -5.44333    0.00000    0.00000       -5.44333    0.00000    0.00000
-              0.00000   -5.44333    0.00000        0.00000   -5.44333    0.00000
-              0.00000    0.00000   10.88667        0.00000    0.00000   10.88667
+             -5.44274    0.00000    0.00000       -5.44274    0.00000    0.00000
+              0.00000   -5.44274    0.00000        0.00000   -5.44274    0.00000
+              0.00000    0.00000   10.88548        0.00000    0.00000   10.88548
 
          MAIN DIRECTIONS OF THE EFG   1.0000 -0.0000  0.0000
                                       0.0000  1.0000  0.0000
@@ -42,15 +42,15 @@
 :ETA003:                         ASYMM. ETA =     0.00000
 
 
-:FIT001: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  1  0.3134222E-03
-:FIT001: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  1  0.3134222E-03
-:FIT002: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  2  0.3606731E-02
-:FIT002: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  2  0.3606731E-02
-:FIT003: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  3  0.1964879E-03
-:FIT003: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  3  0.1964879E-03
-:DEN  : DENSITY INTEGRAL  =         -7922.25453105   (Ry)
+:FIT001: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  1  0.3132867E-03
+:FIT001: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  1  0.3132867E-03
+:FIT002: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  2  0.3605560E-02
+:FIT002: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  2  0.3605560E-02
+:FIT003: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  3  0.1963318E-03
+:FIT003: LUSE= 13 SIGMA OF V-XC FIT FOR ATOM  3  0.1963318E-03
+:DEN  : DENSITY INTEGRAL  =         -7922.25854248   (Ry)
        ELS_POTENTIAL_AT Z=0 and Z=0.5:   0.00000   0.00000
        ELS_POTENTIAL_AT Y=0 and Y=0.5:   0.00000   0.00000
-:VZERO:v0,v0c,v0x  -0.85437   0.00000  -0.85437 v5,v5c,v5x  -0.85437   0.00000  -0.85437
-:VZERY:v0,v0c,v0x  -0.85437   0.00000  -0.85437 v5,v5c,v5x  -0.85437   0.00000  -0.85437
-:VZERX:v0,v0c,v0x  -4.27127  -3.14812  -1.12315 v5,v5c,v5x  -2.41513  -1.35946  -1.05567
+:VZERO:v0,v0c,v0x  -0.85438   0.00000  -0.85438 v5,v5c,v5x  -0.85438   0.00000  -0.85438
+:VZERY:v0,v0c,v0x  -0.85438   0.00000  -0.85438 v5,v5c,v5x  -0.85438   0.00000  -0.85438
+:VZERX:v0,v0c,v0x  -4.27069  -3.14767  -1.12302 v5,v5c,v5x  -2.41613  -1.36035  -1.05578
