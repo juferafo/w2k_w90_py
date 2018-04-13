@@ -3,7 +3,6 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
 import sys
-import numpy as np
 
 '''
 
@@ -34,7 +33,7 @@ def get_ham(case):
 
     return ham
 
-def band_plot(case = get_case()):
+def band_plot(case = get_case(), blda, bw):
     import matplotlib as plt
 
     return None
@@ -68,10 +67,19 @@ class readin(object):
         self.sp   = sp
         self.soc  = soc
   
-    def inwf():
-        pass
+    def inwf(self, spin = "up"):
+        if self.sp:
+            ext = spin
+        else:
+            ext = ''
 
-    def win():
+        with open(self.case+".inwf"+ext) as f:
+            f = [ l.split() for l in f]
+
+        return f
+
+
+    def win(self):
         pass
 
     def kmesh(case = get_case()):

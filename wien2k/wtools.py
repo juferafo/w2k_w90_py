@@ -267,6 +267,46 @@ class wtools(win.wien2k):
 		return dmts[iatom]
 
     
+    def spag_ene(self, plot = True, c = '#1f77b4', ene_range = [-10,10]):
+        import matplotlib.pyplot as plt
+        
+        with open(self.case+".spaghettiup_ene", "r") as f:
+            f = [ l.split() for l in f ]
+        
+        bands = {}
+        for l in f:
+            if "bandindex:" in l:
+                b = int(l[1])
+                bands[b] = []
+                continue
+            
+            bands[b].append(float(l[-1]))
+       
+        if plot:
+            with open(self.case+".klist_band", "r") as kb:
+                kb = [ l.split() for l in kb ]
+            
+            nt = []
+            lt = []
+            for i in range(len(kb)):
+                if len(kb[i]) > 5:
+                    plt.axvline(x = i, color = 'black', linewidth = 0.5)
+                    nt.append(i)        
+                    lt.append(kb[i][0])
+
+            plt.xticks(nt, lt)
+            
+            for b in bands.keys():
+                plt.plot(bands[b], color = c)
+            
+            plt.title("WIEN2k calculation "+self.case)
+            plt.ylim(ene_range)
+            plt.xlim([-0.01,len(bands[b])-1])
+            plt.show()
+
+        return bands
+
+
 def get_case():
     return None
 
