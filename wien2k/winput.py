@@ -12,40 +12,6 @@ Coded by Juan Fernandez Afonso
 Institut fur Festkoerperphysik, TU Wien, Austria
 
 email: juferafo(at)hotmail.com
-
-Last update: 1/10/2017
-
-"""
-
-"""
-
-Included in the wien2k class:
-
-    vxc  :
-    RK   :
-
-"""
-
-
-
-
-"""
-Defined here:
-        	get_case
-	        struct_lat
-		get_uj
-	        get_RK
-	        get_vxc
-		get_kmesh
-		get_inso
-		get_int
-	        natdm
-
-Updates to be done:
-		Correct and add descriptions for each definition
-		Read the full information in case.in1, in2(c) etc...
-		Read group and symmetry information from output of x sgroup and x symmetry
-                Read reciprocal lattice labels to plot the band structure!
 """
 
 sh = os.system

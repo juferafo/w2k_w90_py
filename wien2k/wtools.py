@@ -5,7 +5,7 @@ import os
 import sys
 import re
 import numpy as np
-import wien2k.winput as winput
+import wien2k.winput as win
 import wien2k.dm     as wdm   
 
 """
@@ -13,50 +13,21 @@ Created by Juan Fernandez Afonso
 Institut fur Festkoerperphysik, TU Wien, Austria
 
 email: juferafo(at)hotmail.com
-
-Defined here:
-		get_ene
-        	eneiter
-                eneplot
-                get_fermi
-                get_conv
-                conviter
-                convplot
-		check_errors
-		scfmm
-		scfmmiat
-                dos_plot
-
-In development:
-        	mmi
-	        scfdm
-		dos_plot
-		scfvorb
-		vorb
-		dmat
-		get_mag
-		full_dmat
-		scfmiter
-		join_line_dmat
-
-Bugs and updates to be done:
-		Improve descriptions of the methods
-		Monitorize dmat and vorb through the scf file
-		calculate orbital moments from density matrices
-		fix bug read dmatud in SOC! all the information is stored in scfdmup!!!
-		plot band structure
-		read the atom and orbital plot to make a legend id DOS plot method
-		write density matrix in case.dmat format
 """
 
 sh = os.system
 cd = os.chdir
 pwd = os.getcwd()
 
-class wtools(winput.wien2k):
+class wtools(win.wien2k):
     """
     This class takes the inheritance from the winput.wien2k objects.
     """
+
+    def __init__(self, wincase):
+        self.case = wincase.case
+        self.sp   = wincase.sp
+        self.soc  = wincase.soc
 
     # NOT TESTED!
     def ene(units='Ry'):
@@ -246,8 +217,6 @@ class wtools(winput.wien2k):
 	# from winput import natdm
 	# implement the natdm method! until this this variable will not be used!!!!
 
-        # ERROR CONTROL trying to read scfdmup when no sp!
-        
         if file_read:
             scfile = file_read
 
@@ -261,7 +230,7 @@ class wtools(winput.wien2k):
  		    scfile = self.case+'.scfdmup'
 	    else:
 	            scfile = self.case+'.scfdm'+file_spin
-	
+
         if not os.path.exists(scfile):
 		print("ERROR: "+scfile+" struct file does not exist")
 		return None
@@ -297,105 +266,9 @@ class wtools(winput.wien2k):
 	else:
 		return dmts[iatom]
 
-    # TESTED!
-    def conviter(self, param='CHARGE'):
-        '''
-        This method returns the convergence of the calculation
-        '''
-        if param not in ['CHARGE', 'ENERGY']:
-	    print("ERROR: param variable not correct in wtools.conviter")
-            return None
-	
-        if os.path.exists(self.case+".dayfile"):
-		with open(self.case+".dayfile") as df:
-		    ldf = df.readlines()
-                
-                c = []
-                for l in ldf:
-                    if param in l: 
-		        ci = l.split()[-1]
-		        c.append(ci)
-
-                return np.asarray(c, dtype=np.float64) 
-	else:
-		print("ERROR: "+self.case+".dayfile file does not exist")
-
-
-    # TESTED!
-    def conv(self, param='CHARGE'):
-        '''
-        This method returns the convergence of the last iteration
-        '''
-        if param not in ['CHARGE', 'ENERGY']:
-	    print("ERROR: param variable not correct in wtools.conv")
-            return None
-
-	if os.path.exists(self.case+".dayfile"):
-		with open(self.case+".dayfile") as df:
-		    ldf = df.readlines()
-
-                for i in range(len(ldf)-1,-1,-1):
-                    if param in ldf[i]: 
-		        c = ldf[i].split()[-1]
-                        return float(c)
-
-	else:
-		print("ERROR: "+self.case+".dayfile file does not exist")
-
-
-    # Bug: the figure cuts the yaxis title
-    def convplot(self, param='CHARGE', dots='ro-', show=True, save = True):
-        '''
-        This method plot the evolution of the energy with the iteration number
-        '''
     
-        import matplotlib.pyplot as plt
-     
-        conv = wtools().conviter(param)
-        fig = plt.figure()
-        plt.title(self.case+' '+param+' convergence\n'+self.case+'.dayfile')
-        plt.xlabel('# iteration')
-        plt.ylabel(param+' convergence')
-        plt.plot(conv, dots)
-        
-        if save:
-            fig.savefig('./conv_'+param+'.png', bbox_inches='tight')
-        if show:
-            plt.show()
-
-
-
-
 def get_case():
     return None
-
-
-
-
-# Maybe is not necesary!
-def check_errors():
-	ef = []
-	for f in os.listdir("./"):
-		if f.endswith(".error"):
-			ef.append(f)
-
-	if len(ef) == 0:
-		print("No *.error files present. Maybe clean_lapw was executed.")
-		return None, [], 'clean'
-	else:	
-		error_files = []
-		for e in ef:
-			if os.path.getsize("./"+e) > 0:
-				error_files.append(f)
-		print(error_files)
-
-		if len(error_files) > 0:
-			status = 'errors'
-		else:
-			status = 'no errors'
-		return len(error_files) == 0, error_files, status
-
-
 
 
 
@@ -533,7 +406,6 @@ def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
 
 
 
-
 ##################################
 ##################################
 #    TESTED UNTIL HERE           #
@@ -628,25 +500,3 @@ def vorb(case, spin = ''):
 	else:
 		print("ERROR: "+case+".vorb"+spin+" file does not exist")
 		return None
-
-def join_line_dmat(line_dmat):
-        '''
-        This definition add a number to a given line in the case.dmat* and 
-        mantain the structure avoiding problems with "   -" and "  -"
-        '''
-        line = ""
-        for i in range(len(line_dmat)):
-                if i == 0 or i == 1 or i == 3:
-                        if float(line_dmat[i]) < 0:
-                                line += " "+line_dmat[i]
-                        else:
-                                line += "  "+line_dmat[i]
-                elif i == 2:
-                        if float(line_dmat[i]) < 0:
-                                line += "   "+line_dmat[i]
-                        else:
-                                line += "    "+line_dmat[i]
-                else:
-                        print("ERROR")
-
-        return line+"\n"
