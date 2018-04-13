@@ -261,8 +261,8 @@ class wtools(winput.wien2k):
  		    scfile = self.case+'.scfdmup'
 	    else:
 	            scfile = self.case+'.scfdm'+file_spin
-
-	if not os.path.exists(scfile):
+	
+        if not os.path.exists(scfile):
 		print("ERROR: "+scfile+" struct file does not exist")
 		return None
 
