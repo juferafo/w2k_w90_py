@@ -267,7 +267,11 @@ class wtools(win.wien2k):
 		return dmts[iatom]
 
     
-    def spag_ene(self, plot = True, c = '#1f77b4', ene_range = [-10,10]):
+    def spag_ene(self, plot = True, save = True, c = '#1f77b4', ene_range = [-10,10]):
+        '''
+        update read content with np.loadtxt?
+        '''
+
         import matplotlib.pyplot as plt
         
         with open(self.case+".spaghettiup_ene", "r") as f:
@@ -303,13 +307,68 @@ class wtools(win.wien2k):
             plt.ylim(ene_range)
             plt.xlim([-0.01,len(bands[b])-1])
             plt.show()
+            if save:
+                fig.savefig('./'+self.case+'_bands.pdf')
 
         return bands
 
 
+    def dos_plot(self, ene_range = [-10,10], spin='up', units='eV', show=True, save=True, read_file = None):
+
+        '''
+        Update to be done: include the personalized labels
+        '''
+
+	import matplotlib.pyplot as plt
+        
+        if read_file:
+            f = read_file
+
+        else:
+            if self.sp:
+                sp = spin
+            else:
+                sp = ''
+            
+            if units == 'Ry':
+                u = ''
+            else:
+                u = 'ev'
+
+            f = self.case+".dos1"+u+sp
+
+        if os.path.exists(f):
+            with open(f, "r") as fdos:
+                fdos = fdos.readlines()
+            
+
+            reat = re.compile("\d:\S+")
+            reat = re.findall(reat, fdos[2]) 
+            print(reat)
+
+            dos = np.loadtxt(fdos[3:], dtype=np.float64)
+            
+            plt.axvline(x = float(fdos[1].split()[1]), color = 'black', linewidth = 0.5)
+            for i in range(1,len(dos[0])):
+                plt.plot(dos[:,0], dos[:,i], label='Atom:orbital '+reat[i-1])
+           
+	    plt.title('Density of States '+self.case)
+            plt.ylabel('DOS (1/'+units+')')
+            plt.xlabel('Energy ('+units+')')
+            plt.xlim(ene_range)
+	    plt.legend(loc = 0)
+            
+            if show:
+                plt.show() 
+            if save:
+                plt.savefig('./'+self.case+'_DOS.pdf')
+
+        else:
+	    print("Not possible to read input "+f)
+
+        
 def get_case():
     return None
-
 
 
 def scfmmiat(case=get_case(), at=1):
@@ -340,66 +399,6 @@ def scfmmiat(case=get_case(), at=1):
 	        print("ERROR: "+case+".scf file does not exist")
 	
 
-
-def dos_plot(e_min, e_max, case=get_case(), spin='up', units='eV', show=True, save=True):
-	
-	import matplotlib.pyplot as plt
-	from winput import get_int
-	
-
-	if os.path.exists(case+'.int'):
-		fdos = []
-		for f in os.listdir("./"):
-			if ".dos" in f and "ev"+spin in f:
-				fdos.append(f)
-
-		dos_cases = get_int(case)
-		nd = len(dos_cases)
-
-		# Testing to read case.dos1evup only
-		with open(case+".dos1evup") as fdos:
-			fdos = fdos.readlines()
-		
-		'''
-		ndos_file = fdos
-		for l in fdos:
-			l = [float(li) for li in l.split()]
-		'''
-		
-		ef = float(fdos[1].split()[1])
-		
-		dos_labels = {}
-		clabel = 1
-		for i in fdos[2].split()[2:]:
-			dos_labels[clabel] = i
-			clabel += 1
-		print(dos_labels)
-
-		dos_file = np.loadtxt(fdos[3:], dtype=np.float64)
-		dos_ene = dos_file[:,0]
-		
-		dos = {}
-		for i in range(1,len(dos_file[0])):
-		    dos[i] = dos_file[:,i]
-
-		fig = plt.figure()
-		plt.title('Density of States '+case+'\nEF = %1.5f' % ef)
-		plt.xlabel('Energy (eV)')
-		plt.ylabel('DOS (1/'+units+')')
-		for di in sorted(dos.keys()):
-		    plt.plot(dos_ene, dos[di], label='Atom:orbital '+dos_labels[di])
-		plt.ylim(ymin = 0)
-		plt.xlim(xmin = e_min, xmax = e_max)
-		plt.legend(loc=0)
-		plt.axvline(ef,color = 'k')
-
-		if show:
-		    plt.show()
-                if save:
-                    fig.savefig('./DOS.pdf')
-
-	else:
-		print("Not possible to read input for DOS plot")
 
 
 def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
