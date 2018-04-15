@@ -2,12 +2,9 @@
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
-import sys
 import glob
-import re
 import numpy as np
 import wien2k.winput as winput
-import wien2k.dm     as wdm   
 
 """
 Created by Juan Fernandez Afonso
@@ -29,6 +26,7 @@ def restart_case(path='./', rm_scf=False):
         ('rm '+case+'.*_unmixed')
         if rm_scf:
             sh('rm '+case+'.scf*')
+
 
 class output(winput.wien2k):
     """

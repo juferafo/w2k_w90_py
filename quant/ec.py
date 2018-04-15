@@ -6,42 +6,62 @@ import quant.mathop as mathop
 
 sr = np.sqrt
 
-def orb_mat(orbital, imaginary = False):
+def orb_mat(orb = 'xy', value = 'real'):
         '''
         This definition returns the orbital matrix for the t1g excitons! 
+        include option 'all'
         '''
-        # ord = 0, 1, 2 -> yz, xz, xy
 	# Corrected orbital matrices
        
-	t1g = {}
- 
-        yz_r = (1j/4)*np.array([[    0,    -1,     0,   -1,     0],\
-				[    1,     0, sr(6),    0,     1],\
-				[    0,-sr(6),     0,-sr(6),     0],\
-				[    1,     0, sr(6),0,1],[0,-1,0,-1,0]])
+
+        yz_r = (1j/4)*np.array([[     0,    -1,     0,   -1,      0],\
+	                        [     1,     0, sr(6),    0,      1],\
+	                        [     0,-sr(6),     0,-sr(6),     0],\
+				[     1,     0, sr(6),     0,     1],\
+                                [     0,    -1,     0,    -1,     0]])
         
+        yz_i =(-1./4)*np.array([[     0,     1,     0,     1,     0],\
+                                [     1,     0, sr(6),     0,     1],\
+                                [     0, sr(6),     0, sr(6),     0],\
+                                [     1,     0, sr(6),     0,     1],\
+                                [     0,     1,     0,     1,     0]])
+        
+        xz_r =(-1./4)*np.array([[     0,     1,     0,    -1,     0],\
+                                [     1,     0,-sr(6),     0,     1],\
+                                [     0,-sr(6),     0, sr(6),     0],\
+                                [    -1,     0, sr(6),     0,    -1],\
+                                [     0,     1,     0,    -1,     0]])
 
+        xz_i = (1j/4)*np.array([[     0,    -1,     0,     1,     0],\
+                                [     1,     0,-sr(6),     0,     1],\
+                                [     0, sr(6),     0,-sr(6),     0],\
+                                [    -1,     0, sr(6),     0,    -1],\
+                                [     0,    -1,     0,     1,     0]])
+        
+        xy_r = np.array([[  0,  0,  0,  0,-1j],\
+                         [  0,  0,  0,  0,  0],\
+                         [  0,  0,  0,  0,  0],\
+                         [  0,  0,  0,  0,  0],\
+                         [ 1j,  0,  0,  0,  0]])
 
+        xy_i = np.array([[  1,  0,  0,  0,  0],\
+                         [  0,  0,  0,  0,  0],\
+                         [  0,  0,  0,  0,  0],\
+                         [  0,  0,  0,  0,  0],\
+                         [  0,  0,  0,  0, -1]])
+        
+        t1g_r = {'xy': xy_r, 'yz': yz_r, 'xz': xz_r} 
+        t1g_i = {'xy': xy_i, 'yz': yz_i, 'xz': xz_i} 
 
-	yz_i = (-1./4)*np.matrix([[0,1,0,1,0],[1,0,np.sqrt(6),0,1],[0,np.sqrt(6),0,np.sqrt(6),0],[1,0,np.sqrt(6),0,1],[0,1,0,1,0]])
-        elif orb == 1:
-                xz_r = (-1./4)*np.matrix([[0,1,0,-1,0],[1,0,-np.sqrt(6),0,1],[0,-np.sqrt(6),0,np.sqrt(6),0],[-1,0,np.sqrt(6),0,-1],[0,1,0,-1,0]])
-                xz = (1j/4)*np.matrix([[0,-1,0,1,0],[1,0,-np.sqrt(6),0,1],[0,np.sqrt(6),0,-np.sqrt(6),0],[-1,0,np.sqrt(6),0,-1],[0,-1,0,1,0]])
-        elif orb == 2:
-                xy_r = np.matrix([[0,0,0,0,-1j],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[1j,0,0,0,0]])
-                xy_i = np.matrix([[1,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,-1]])
+        if orb = 'all':
+            return t1g_r, t1g_i
 
-	else:
-                print 'orb Parameter out of range!'
-	
-        if a == 'r':
-                # Projection over the real orbital matrices!
-                return orb_mat_r
-        elif a == 'i':
-                # Projection over the imaginary orbital matrices!
-                return orb_mat_i
+        if value == 'real':
+            return t1g_r[orb]
+
+        elif value == 'imag':
+            return t1g_i[orb]
+
         else:
-                print 'ERROR in def orb_mat(orb, a):'
-                return None
-
-
+            return None
+        
