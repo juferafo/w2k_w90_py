@@ -3,15 +3,15 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
 import sys
+import numpy as np
+import wien2k.wtools as wt
 
-'''
+"""
+Coded by Juan Fernandez Afonso
+Institut fur Festkoerperphysik, TU Wien, Austria
 
-To be defined here:
-
-    read_in class with the input information like the number of bands, etc...
-
-    
-'''
+email: juferafo(at)hotmail.com
+"""
 
 # SUBSTITUTE THIS DEFINITION FOR THE METHOD FROM import wien2k
 def get_case():
@@ -28,13 +28,43 @@ def get_ham(case):
     fh = open(case+"_hr.dat", "r").readlines()
     l3 = int(fh[2].split()[0])
     jump = 3 + l3//15
-
+    
+    # substitute this for np.readtxt !
     ham = [ l.split() for l in fh[jump+1:] ]
 
     return ham
 
-def band_plot(case = get_case(), blda, bw):
-    import matplotlib as plt
+
+def band_plot(casew2k, c = '#1f77b4', ene_range = [-10,10]):
+    
+    import matplotlib.pyplot as plt
+
+    w2k = wt.wtools(casew2k).spag_ene()
+
+    with open(casew2k.case+"_band.dat", "r") as f9:
+        f9 = f9.readlines()
+
+
+    # Modify this ugly way of reading the bands!!!!
+    w90 = {1 : []}
+    k = 1
+    for i in f9:
+        if i.split() == []:
+            k += 1
+            w90[k] = []
+            continue  
+
+        w90[k].append(float(i.split()[1]))
+
+
+    for b in w2k.keys():
+        plt.plot(w2k[b], color = c)
+    for b in w90.keys():
+        plt.plot(w90[b], color = 'red')
+
+    plt.ylim(ene_range)
+    plt.xlim([-0.01,len(w2k[b])-1])
+    plt.show()
 
     return None
 

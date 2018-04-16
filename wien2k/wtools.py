@@ -266,12 +266,12 @@ class wtools(win.wien2k):
 		return dmts[iatom]
 
     
-    def spag_ene(self, plot = True, save = True, c = '#1f77b4', ene_range = [-10,10]):
+    def spag_ene(self):
         '''
         update read content with np.loadtxt?
+        include the klist band!
+        carefull! I am forgeting about the Ry to eV conversion!!!!
         '''
-
-        import matplotlib.pyplot as plt
         
         with open(self.case+".spaghettiup_ene", "r") as f:
             f = [ l.split() for l in f ]
@@ -284,32 +284,42 @@ class wtools(win.wien2k):
                 continue
             
             bands[b].append(float(l[-1]))
-       
-        if plot:
-            with open(self.case+".klist_band", "r") as kb:
-                kb = [ l.split() for l in kb ]
-            
-            nt = []
-            lt = []
-            for i in range(len(kb)):
-                if len(kb[i]) > 5:
-                    plt.axvline(x = i, color = 'black', linewidth = 0.5)
-                    nt.append(i)        
-                    lt.append(kb[i][0])
-
-            plt.xticks(nt, lt)
-            
-            for b in bands.keys():
-                plt.plot(bands[b], color = c)
-            
-            plt.title("WIEN2k calculation "+self.case)
-            plt.ylim(ene_range)
-            plt.xlim([-0.01,len(bands[b])-1])
-            plt.show()
-            if save:
-                fig.savefig('./'+self.case+'_bands.pdf')
-
+        
         return bands
+
+
+    def band_plot(self, show = True, save = True, c = '#1f77b4', ene_range = [-10,10]):
+        '''
+        Include read_file option like dos_plot method
+        '''
+
+        import matplotlib.pyplot as plt
+       
+        with open(self.case+".klist_band", "r") as kb:
+           kb = [ l.split() for l in kb ]
+            
+        nt = []
+        lt = []
+        for i in range(len(kb)):
+            if len(kb[i]) > 5:
+                plt.axvline(x = i, color = 'black', linewidth = 0.5)
+                nt.append(i)        
+                lt.append(kb[i][0])
+
+        plt.xticks(nt, lt)
+            
+        bands = wtools(self).spag_ene(show, save, c, ene_range)
+        for b in bands.keys():
+            plt.plot(bands[b], color = c)
+            
+        plt.title("WIEN2k calculation "+self.case)
+        plt.ylim(ene_range)
+        plt.xlim([-0.01,len(bands[b])-1])
+        
+        if show:
+            plt.show()
+        if save:
+            plt.savefig('./'+self.case+'_bands.pdf')
 
 
     def dos_plot(self, ene_range = [-10,10], spin='up', units='eV', show=True, save=True, read_file = None):
