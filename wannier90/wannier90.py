@@ -20,12 +20,17 @@ def get_case():
     '''
     return os.getcwd().split("/")[-1]
 
-def get_ham(case):
+def get_ham(case = get_case(), read_file = None):
     '''
     This method returns the hopping hamiltonian as a list of strings
     '''
     
-    fh = open(case+"_hr.dat", "r").readlines()
+    if read_file:
+        f = read_file
+    else:
+        f = case+"_hr.dat"
+
+    fh = open(f, "r").readlines()
     l3 = int(fh[2].split()[0])
     jump = 3 + l3//15
     
@@ -68,6 +73,7 @@ def band_plot(casew2k, c = '#1f77b4', ene_range = [-10,10]):
 
     return None
 
+
 class hr(object):
     '''
     Describe this and also what it is defined here
@@ -85,6 +91,12 @@ class hr(object):
         self.soc = soc
 
     def get_hR(self, R = [0,0,0]):
+        '''
+        This method returns the hopping parameters H(R) at a particular unit cell vector R
+        '''
+
+        print(self.ham)
+        
         return None
 
 class readin(object):
