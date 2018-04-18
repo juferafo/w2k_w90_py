@@ -1,14 +1,14 @@
 ### Figure configuration
  5.0   3.0                         # paper offset of plot
-10.0  15.0                         # xsize,ysize [cm]
- 0.5   4                           # major ticks, minor ticks
+10.0  10.0                         # xsize,ysize [cm]
+ 1.0   2                           # major ticks, minor ticks
  1.0   1                           # character height, font switch
  1.7   2    0                      # line width, line switch, color switch
 ### Data configuration            
--4.05  1.05  2                      # energy range, energy switch (1:Ry, 2:eV)
-1      0.6390394876                      # Fermi switch,  Fermi-level (in Ry units)
+-10.00  10.0  2                      # energy range, energy switch (1:Ry, 2:eV)
+1      0.6380793192                      # Fermi switch,  Fermi-level (in Ry units)
 1   999                            # number of bands for heavier plotting   1,1
-2      6    0.2                    # jatom, jtype, size  of heavier plotting   
+0      1    0.2                    # jatom, jtype, size  of heavier plotting   
 
 
 Fermi switch:

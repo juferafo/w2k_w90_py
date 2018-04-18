@@ -266,25 +266,25 @@ class wtools(win.wien2k):
 		return dmts[iatom]
 
     
-    def spag_ene(self):
+    def spag_ene(self, klist_band = False):
         '''
-        update read content with np.loadtxt?
-        include the klist band!
         carefull! I am forgeting about the Ry to eV conversion!!!!
         '''
         
         with open(self.case+".spaghettiup_ene", "r") as f:
-            f = [ l.split() for l in f ]
-        
-        bands = {}
-        for l in f:
-            if "bandindex:" in l:
-                b = int(l[1])
-                bands[b] = []
-                continue
+            f = f.readlines()
             
-            bands[b].append(float(l[-1]))
-        
+        for i in range(1,len(f)):
+            if "bandindex:" in f[i]:
+                jump = i-1
+                break
+
+        bands = {}
+        count = 1
+        for i in range(1,len(f),jump+1):
+            bands[count] = np.loadtxt(f[i:i+jump], usecols = 4)
+            count += 1
+
         return bands
 
 
@@ -297,6 +297,8 @@ class wtools(win.wien2k):
        
         with open(self.case+".klist_band", "r") as kb:
            kb = [ l.split() for l in kb ]
+        
+        bands = wtools(self).spag_ene()
             
         nt = []
         lt = []
@@ -305,15 +307,15 @@ class wtools(win.wien2k):
                 plt.axvline(x = i, color = 'black', linewidth = 0.5)
                 nt.append(i)        
                 lt.append(kb[i][0])
-
+        plt.axhline(y = 0, color = 'black', linewidth = 0.5)
         plt.xticks(nt, lt)
             
-        bands = wtools(self).spag_ene(show, save, c, ene_range)
         for b in bands.keys():
             plt.plot(bands[b], color = c)
-            
+        
         plt.title("WIEN2k calculation "+self.case)
         plt.ylim(ene_range)
+        print(len(bands[b]))
         plt.xlim([-0.01,len(bands[b])-1])
         
         if show:

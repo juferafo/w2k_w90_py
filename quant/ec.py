@@ -3,10 +3,12 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import numpy as np
 import quant.mathop as mathop
+import qm.pauli as pauli
 
 sr = np.sqrt
 
-def orb_mat(orb = 'xy', value = 'real'):
+# untested!
+def ecorb(orb = 'xy', value = 'real'):
         '''
         This definition returns the orbital matrix for the t1g excitons! 
         include option 'all'
@@ -64,4 +66,11 @@ def orb_mat(orb = 'xy', value = 'real'):
 
         else:
             return None
-        
+
+# untested!
+def dmec(orb = 'xy', value = 'real', spin = 'z'):
+
+    gamma = ecorb(orb, value)
+    pauli = pauli(spin) 
+
+    return np.kron(pauli, gamma)

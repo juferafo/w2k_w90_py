@@ -39,8 +39,8 @@ vxc = case.vxc()
 RK  = case.RK()
 klist = case.klist()
 
-#wout.spag_ene()
-wout.dos_plot()
+wout.band_plot(show = True)
+#wout.dos_plot()
 
 '''
 To be corrected!
