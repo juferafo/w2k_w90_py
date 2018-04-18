@@ -13,18 +13,9 @@ email : juferafo@hotmail.com
 email2: afonso@ifp.tuwien.ac.at
 """
 
-"""
-Defined here:
-
-    class for defining density matrices objects
-    
-
-"""
-
 class dmat(object):
     """
     This dmat class defimes ...
-
     """
     def __init__(self, mat, block = "full"):
         self.mat   = mat
