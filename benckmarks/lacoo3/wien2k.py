@@ -16,22 +16,6 @@ import wannier90.wannier90 as w90
 case = win.wien2k(sp = True)
 wout = wt.wtools(case)
 woutput = wo.output(case) 
-'''
-        Correct and add descriptions for each definition
-            This class defines a wien2k calculation object. From it we can obtain information both
-                def __init__(self, sp = False, soc = False):
-                def vxc(self, file_read='in0'):
-                def RK(self, file_read='in1'):
-                def klist(self, file_read='klist'):
-                def uj(self, units='Ry'):
-                def hkl_soc(self):
-                def int(self):
-                                                    def struct_lat(case, ext='struct'):
-                                                    def natdm(case, c=False):
-
-'''
-
-# from winput!!!
 
 print(type(case))
 
@@ -39,8 +23,11 @@ vxc = case.vxc()
 RK  = case.RK()
 klist = case.klist()
 
-wout.band_plot(show = True)
-#wout.dos_plot()
+
+#case.int()
+
+#wout.band_plot(show = True)
+wout.dos_plot()
 
 '''
 To be corrected!
@@ -49,4 +36,3 @@ lat = case.atpos(structure = "lacoo3.struct")
 print(lat)
 '''
 
-woutput.isclean()

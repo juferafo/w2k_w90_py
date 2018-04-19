@@ -352,16 +352,19 @@ class wtools(win.wien2k):
             with open(f, "r") as fdos:
                 fdos = fdos.readlines()
             
-
+            '''
             reat = re.compile("\d:\S+")
             reat = re.findall(reat, fdos[2]) 
             print(reat)
-
-            dos = np.loadtxt(fdos[3:], dtype=np.float64)
+            '''
             
+            dos = np.loadtxt(fdos[3:], dtype=np.float64)
+            dos_labels = win.wien2k.int(self)
+            print(dos_labels)
+
             plt.axvline(x = float(fdos[1].split()[1]), color = 'black', linewidth = 0.5)
             for i in range(1,len(dos[0])):
-                plt.plot(dos[:,0], dos[:,i], label='Atom:orbital '+reat[i-1])
+                plt.plot(dos[:,0], dos[:,i], label=dos_labels[i])
            
 	    plt.title('Density of States '+self.case)
             plt.ylabel('DOS (1/'+units+')')

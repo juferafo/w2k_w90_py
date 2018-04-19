@@ -79,6 +79,7 @@ class wien2k(object):
         else:
             print("ERROR: "+self.case+"."+file_read+" file does not exist")
 
+
     def klist(self, file_read='klist'):
         if os.path.exists(self.case+"."+file_read):
             with open(self.case+"."+file_read) as klist:
@@ -181,24 +182,27 @@ class wien2k(object):
             print("ERROR: "+self.case+" calculation does not include SOC")
 
 
-    # NOT TESTED!!!!
     def int(self):
+        '''
+        This method returns the orbitals for which the DOS is calculated in case.int
+        '''
         if os.path.exists(self.case+".int"):
             with open(self.case+".int") as fint:
-        
                 fint = fint.readlines()
 
-            n = int(float(fint[2].split()[0]))
-	    dos = {}
+            dos = {}
 	    di = 1
-	    for i in range(3, 3+n):
-		dos[di] = [int(float(j)) for j in fint[i].split()[0:2]]
-		di += 1
-		
-	    return dos
+            for l in fint:
+                if re.search('(".*")', l):
+                    dos[di] = re.search('(".*")', l).group(1)
+                    dos[di] = dos[di].replace('"', '')
+                    di += 1    
+	    
+            return dos
 	
 	else:
 	    print("ERROR: "+self.case+".int file does not exist")
+
 
     def strlat(self, structure = None):
         '''
