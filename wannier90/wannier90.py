@@ -3,6 +3,7 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
 import sys
+import re
 import numpy as np
 import wien2k.wtools as wt
 
@@ -20,6 +21,7 @@ def get_case():
     '''
     return os.getcwd().split("/")[-1]
 
+
 def get_ham(case = get_case(), read_file = None):
     '''
     This method returns the hopping hamiltonian as a list of strings
@@ -29,15 +31,20 @@ def get_ham(case = get_case(), read_file = None):
         f = read_file
     else:
         f = case+"_hr.dat"
-
-    fh = open(f, "r").readlines()
-    l3 = int(fh[2].split()[0])
-    jump = 3 + l3//15
     
-    # substitute this for np.readtxt !
-    ham = [ l.split() for l in fh[jump+1:] ]
+    with open(f, "r") as f:
+        f = f.readlines()
+    
+    l3 = int(f[2].split()[0])
+    header = 3 + l3//15
+    
+    dim = int(f[1].split()[0])
+    
+    '''
+    ham = np.loadtxt(f, skiprows = 3 + l3//15)
+    '''
 
-    return ham
+    return dim, f[header:]
 
 
 def band_plot(casew2k, c = '#1f77b4', ene_range = [-10,10]):
@@ -71,8 +78,6 @@ def band_plot(casew2k, c = '#1f77b4', ene_range = [-10,10]):
     plt.xlim([-0.01,len(w2k[b])-1])
     plt.show()
 
-    return None
-
 
 class hr(object):
     '''
@@ -82,7 +87,8 @@ class hr(object):
         self.sp   = sp
         self.soc  = soc
         self.case = case
-        self.ham  = get_ham(case)
+        self.ham  = get_ham(case)[1]
+        self.dim  = get_ham(case)[0]
 
     def change_sp(self, sp):
         self.sp = sp
@@ -90,14 +96,29 @@ class hr(object):
     def change_soc(self, soc):
         self.soc = soc
 
+    # Not intensively tested.
+    # Print hamiltonian to a matrix and compare with case_hr.dat
     def get_hR(self, R = [0,0,0]):
         '''
         This method returns the hopping parameters H(R) at a particular unit cell vector R
         '''
-
-        print(self.ham)
         
-        return None
+        rel = re.compile("^\s{3}(-|\s)"+str(R[0])+"\s{3}(-|\s)"+str(R[1])+"\s{3}(-|\s)"+str(R[2]))
+        for i in range(len(self.ham)):
+            if re.search(rel, self.ham[i]):
+                break
+        
+        hR = self.ham[i:i+self.dim]
+        hR = [ l.split()[3:] for l in hR ]
+
+        hamR = np.zeros((self.dim, self.dim), dtype = np.complex64)
+        for r in hR:
+            i = int(r[0]) - 1
+            j = int(r[1]) - 1
+            hamR[i,j] = float(r[2]) + 1j*float(r[3])
+
+        return hamR
+
 
 class readin(object):
     '''
