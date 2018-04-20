@@ -22,7 +22,7 @@ def get_case():
     return os.getcwd().split("/")[-1]
 
 
-def get_ham(case = get_case(), read_file = None):
+def get_ham(case = get_case(), spin = '', read_file = None):
     '''
     This method returns the hopping hamiltonian as a list of strings
     '''
@@ -30,7 +30,7 @@ def get_ham(case = get_case(), read_file = None):
     if read_file:
         f = read_file
     else:
-        f = case+"_hr.dat"
+        f = case+"_hr.dat"+spin
     
     with open(f, "r") as f:
         f = f.readlines()
@@ -47,35 +47,40 @@ def get_ham(case = get_case(), read_file = None):
     return dim, f[header:]
 
 
-def band_plot(casew2k, c = '#1f77b4', ene_range = [-10,10]):
+def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
     
     import matplotlib.pyplot as plt
 
     w2k = wt.wtools(casew2k).spag_ene()
 
-    with open(casew2k.case+"_band.dat", "r") as f9:
+    print(casew2k.sp)
+
+    if casew2k.sp == False:
+        spin = ''
+
+    with open(casew2k.case+"_band.dat"+spin, "r") as f9:
         f9 = f9.readlines()
 
+    for i in range(len(f9)):
+        if len(f9[i].split()) == 0:
+            break
 
-    # Modify this ugly way of reading the bands!!!!
-    w90 = {1 : []}
-    k = 1
-    for i in f9:
-        if i.split() == []:
-            k += 1
-            w90[k] = []
-            continue  
+    jump = i+1
 
-        w90[k].append(float(i.split()[1]))
-
+    w90 = {}
+    count = 1
+    for i in range(0,len(f9),jump):
+        w90[count] = [ np.loadtxt(f9[i:i+jump], usecols = 0),\
+                       np.loadtxt(f9[i:i+jump], usecols = 1)]
+        count += 1
 
     for b in w2k.keys():
-        plt.plot(w2k[b], color = c)
+        plt.plot(w2k[b][0]*1.89, w2k[b][1], color = c)
     for b in w90.keys():
-        plt.plot(w90[b], color = 'red')
+        plt.plot(w90[b][0], w90[b][1], color = 'red')
 
     plt.ylim(ene_range)
-    plt.xlim([-0.01,len(w2k[b])-1])
+    plt.xlim([-0.000001,w90[b][0][-1]])
     plt.show()
 
 
@@ -83,12 +88,12 @@ class hr(object):
     '''
     Describe this and also what it is defined here
     '''
-    def __init__(self, case = get_case(), sp = False, soc = False):
+    def __init__(self, case = get_case(), sp = False, soc = False, spin = ''):
         self.sp   = sp
         self.soc  = soc
         self.case = case
-        self.ham  = get_ham(case)[1]
-        self.dim  = get_ham(case)[0]
+        self.ham  = get_ham(case, spin)[1]
+        self.dim  = get_ham(case, spin)[0]
 
     def change_sp(self, sp):
         self.sp = sp

@@ -266,7 +266,7 @@ class wtools(win.wien2k):
 		return dmts[iatom]
 
     
-    def spag_ene(self, klist_band = False):
+    def spag_ene(self):
         '''
         carefull! I am forgeting about the Ry to eV conversion!!!!
         '''
@@ -282,7 +282,8 @@ class wtools(win.wien2k):
         bands = {}
         count = 1
         for i in range(1,len(f),jump+1):
-            bands[count] = np.loadtxt(f[i:i+jump], usecols = 4)
+            bands[count] = [ np.loadtxt(f[i:i+jump], usecols = 3),\
+                             np.loadtxt(f[i:i+jump], usecols = 4) ]
             count += 1
 
         return bands
@@ -309,14 +310,14 @@ class wtools(win.wien2k):
                 lt.append(kb[i][0])
         plt.axhline(y = 0, color = 'black', linewidth = 0.5)
         plt.xticks(nt, lt)
-            
+           
         for b in bands.keys():
-            plt.plot(bands[b], color = c)
-        
+            plt.plot(bands[b][1], color = c)
+
         plt.title("WIEN2k calculation "+self.case)
         plt.ylim(ene_range)
         print(len(bands[b]))
-        plt.xlim([-0.01,len(bands[b])-1])
+        plt.xlim([-0.000001,len(bands[b][0])-1])
         
         if show:
             plt.show()
