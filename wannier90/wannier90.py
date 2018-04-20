@@ -12,6 +12,7 @@ Coded by Juan Fernandez Afonso
 Institut fur Festkoerperphysik, TU Wien, Austria
 
 email: juferafo(at)hotmail.com
+       afonso(at)ifp.tuwien.ac.at
 """
 
 # SUBSTITUTE THIS DEFINITION FOR THE METHOD FROM import wien2k
@@ -63,9 +64,8 @@ def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
 
     for i in range(len(f9)):
         if len(f9[i].split()) == 0:
+            jump = i+1
             break
-
-    jump = i+1
 
     w90 = {}
     count = 1
@@ -74,7 +74,20 @@ def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
                        np.loadtxt(f9[i:i+jump], usecols = 1)]
         count += 1
 
+    kband = wt.wtools(casew2k).label_kband()
+    len_kband = np.asarray(kband.values()).max()[0]
+
+    nt = []
+    lt = []
+    for key in kband.keys():
+        for i in kband[key]:
+            x_key = max(w90[1][0])*i/len_kband
+            plt.axvline(x = x_key, color = 'black', linewidth = 0.5)
+            nt.append(x_key)
+            lt.append(key)
+    plt.xticks(nt, lt)
     plt.axhline(y = 0, color = 'black', linewidth = 0.5)
+
 
     for b in w2k.keys():
         plt.plot(w2k[b][0]*1.89, w2k[b][1], color = c)
