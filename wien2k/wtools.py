@@ -265,13 +265,35 @@ class wtools(win.wien2k):
 	else:
 		return dmts[iatom]
 
-    
-    def spag_ene(self):
+
+    def label_kband(self):
+        '''
+        This method returns the label of the high symmetry points of the case.klist_band
+        '''
+
+        with open(self.case+".klist_band", "r") as kb:
+           kb = [ l.split() for l in kb ]
+        
+        lk = {}
+        for i in range(len(kb)):
+            if len(kb[i]) > 5:
+                if kb[i][0] in lk.keys():
+                    lk[kb[i][0]].append(i)
+                else:
+                    lk[kb[i][0]] = [i]
+
+        return lk
+
+
+    def spag_ene(self, spin = 'up'):
         '''
         carefull! I am forgeting about the Ry to eV conversion!!!!
         '''
         
-        with open(self.case+".spaghettiup_ene", "r") as f:
+        if not self.sp:
+            spin = '' 
+        
+        with open(self.case+".spaghetti"+spin+"_ene", "r") as f:
             f = f.readlines()
             
         for i in range(1,len(f)):
@@ -296,20 +318,18 @@ class wtools(win.wien2k):
 
         import matplotlib.pyplot as plt
        
-        with open(self.case+".klist_band", "r") as kb:
-           kb = [ l.split() for l in kb ]
-        
-        bands = wtools(self).spag_ene()
-            
+        bands   = wtools(self).spag_ene()
+        k_label = wtools(self).label_kband()
+
         nt = []
         lt = []
-        for i in range(len(kb)):
-            if len(kb[i]) > 5:
+        for label in k_label.keys():
+            for i in k_label[label]:
                 plt.axvline(x = i, color = 'black', linewidth = 0.5)
                 nt.append(i)        
-                lt.append(kb[i][0])
-        plt.axhline(y = 0, color = 'black', linewidth = 0.5)
+                lt.append(label)
         plt.xticks(nt, lt)
+        plt.axhline(y = 0, color = 'black', linewidth = 0.5)
            
         for b in bands.keys():
             plt.plot(bands[b][1], color = c)

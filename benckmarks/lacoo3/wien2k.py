@@ -26,8 +26,8 @@ klist = case.klist()
 
 #case.int()
 
-#wout.band_plot(show = True)
-wout.dos_plot()
+wout.band_plot(show = True)
+#wout.dos_plot()
 
 '''
 To be corrected!

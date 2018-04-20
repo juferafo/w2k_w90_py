@@ -74,6 +74,8 @@ def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
                        np.loadtxt(f9[i:i+jump], usecols = 1)]
         count += 1
 
+    plt.axhline(y = 0, color = 'black', linewidth = 0.5)
+
     for b in w2k.keys():
         plt.plot(w2k[b][0]*1.89, w2k[b][1], color = c)
     for b in w90.keys():
