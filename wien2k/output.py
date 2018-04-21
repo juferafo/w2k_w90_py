@@ -20,12 +20,25 @@ pwd = os.getcwd()
 
 # Not executed with sh()
 def restart_case(path='./', rm_scf=False):
-        cd(path)
-        case = winput.wien2k().case
-        sh('clean_lapw -s')
-        ('rm '+case+'.*_unmixed')
-        if rm_scf:
-            sh('rm '+case+'.scf*')
+    """
+    This method executes clean_lapw -s in the <path> directory.
+    If the rm_scf option is active, it removes the case.scf* files present.
+    
+    Arguments:
+        path   : str  : Path/directory where restart_case will be executed.
+        rm_scf : bool : If True, the case.scf* files will be removed.
+                        Otherwise, they will remain.
+
+    Returns:
+        out    : None : No output is provided.
+    """
+
+    cd(path)
+    case = winput.wien2k().case
+    sh('clean_lapw -s')
+    sh('rm '+case+'.*_unmixed')
+    if rm_scf:
+        sh('rm '+case+'.scf*')
 
 
 class output(winput.wien2k):
@@ -34,9 +47,18 @@ class output(winput.wien2k):
     """
 
     def conviter(self, param='CHARGE'):
-        '''
-        This method returns the convergence of the calculation
-        '''
+        """
+        
+        Arguments:
+            param  : str : Parameter for which the convergence ratio will be return.
+                           options: ENERGY
+                                    CHARGE
+            
+        Returns:
+            out    : numpy.ndarray : An array containing the convergence ratio of the 
+                                     selected parameter for all the iterations written 
+                                     in case.dayfile.
+        """
         if param not in ['CHARGE', 'ENERGY']:
 	    print("ERROR: param variable not correct in wtools.conviter")
             return None
@@ -60,6 +82,17 @@ class output(winput.wien2k):
         '''
         This method returns the convergence of the last iteration
         '''
+        """
+        
+        Arguments:
+            param  : str : Parameter for which the convergence ratio will be return.
+                           options: ENERGY
+                                    CHARGE
+            
+        Returns:
+            out    : float : The convergence ratio of the last iteration of the 
+                             selected parameter.
+        """
         if param not in ['CHARGE', 'ENERGY']:
 	    print("ERROR: param variable not correct in wtools.conv")
             return None
@@ -82,7 +115,20 @@ class output(winput.wien2k):
         '''
         This method plot the evolution of the energy with the iteration number
         '''
-    
+        """
+        
+        Arguments:
+            param  : str : Parameter for which the convergence ratio will be plotted.
+                           options: ENERGY
+                                    CHARGE
+            dots   : str :
+            show   : str : Optional.
+            save   : str : Optional.
+
+        Returns:
+            out    : None : No output is provided.
+        """
+ 
         import matplotlib.pyplot as plt
      
         conv = wtools().conviter(param)
@@ -103,8 +149,12 @@ class output(winput.wien2k):
         This definition returns a Boolean if non-zero error files ar found.
         '''
 
-        ef = [f for f in os.listdir('./') if (f.endswith('.error') and os.path.getsize(f) > 0)]
+        """
         
+        Returns:
+            out    : bool : True if errors present in the directory. False otherwise.
+        """
+        ef = [f for f in os.listdir('./') if (f.endswith('.error') and os.path.getsize(f) > 0)]
         if ef == []:
             return False, ef
         else:
