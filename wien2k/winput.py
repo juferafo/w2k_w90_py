@@ -27,13 +27,11 @@ class wien2k(object):
         """
         The wien2k.__init__ constructor contains the following information:
 
-            self.case: case name of the calculation folder
-
-            self.sp  : True if the calculation includes spin-polarization
-                       Default value False
-            
-            self.soc : True if the calculation includes spin-orbit coupling
-                       Default value False
+            self.case : str  : case name of the calculation folder
+            self.sp   : bool : True if the calculation includes spin-polarization
+                               Default value False
+            self.soc  : bool : True if the calculation includes spin-orbit coupling
+                               Default value False
         """
         
         self.sp   = sp
@@ -209,11 +207,17 @@ class wien2k(object):
 	else:
             print("ERROR: "+self.case+" calculation does not include SOC")
 
-
+    
     def int(self):
         '''
         This method returns the orbitals for which the DOS is calculated in case.int
         '''
+        """
+
+        Returns:
+            out : dict :
+        """
+
         if os.path.exists(self.case+".int"):
             with open(self.case+".int") as fint:
                 fint = fint.readlines()

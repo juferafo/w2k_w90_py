@@ -4,6 +4,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 import os
 import re
 import numpy as np
+import matplotlib.pyplot as plt
 import wien2k.winput as win
 import wien2k.dm     as wdm   
 
@@ -29,18 +30,19 @@ class wtools(win.wien2k):
         self.soc  = wincase.soc
 
     # NOT TESTED!
-    def ene(self, units='Ry'):
+    def ene(self, units = 'Ry', read_file = None):
         """
         This definition returns the energy value of the last iteration
         found in the ./case.scf file
         
         Arguments:
-            units  : str  : Energy units. 
-                            Options: Ry : Rydberg units
-                                   : eV : Electronvolt units
-    
+            units     : str   : Energy units. 
+                                Options : Ry : Rydberg units
+                                        : eV : Electronvolt units
+            read_file : str   :
+
         Returns:
-            out    : float : Energy of the last iteration
+            out       : float : Energy of the last iteration
         """
 	if units == 'Ry':
 	    u = 1.0
@@ -51,22 +53,26 @@ class wtools(win.wien2k):
 	    print("Setting default energy units to Ry")
             u = 1.0
 
-	if os.path.exists(self.case+".scf"):
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".scf"
+
+	if os.path.exists(f):
 	    with open(self.case+".scf", "r") as scf:
 		lscf = scf.readlines()
 	    for i in range(len(lscf)-1,-1,-1):
 		if ":ENE" in lscf[i]: 
 	            ene = lscf[i].split()[-1]
 		    break
-
-		return float(ene)*u
+	    return float(ene)*u
 	else:
 		print("ERROR: "+self.case+".scf file does not exist")
 
 
     # NOT TESTED!
-    # optional update: to generate energy.dat file
-    def eneiter(self, units='Ry'):
+    # finish! energy.dat file
+    def eneiter(self, units = 'Ry', write_data = False, read_file = None):
 	"""
         This definition returns the evolution of the energy vwith the iteration number 
         found in the ./case.scf file
@@ -89,45 +95,64 @@ class wtools(win.wien2k):
 		print("Setting default energy units to Ry")
 	        u = 1.0
 
-	if os.path.exists(self.case+".scf"):
-		eneiter = []
-		with open(self.case+".scf") as scf:
-			lscf = scf.readlines()
-		for l in lscf:
-			if ":ENE" in l: 
-				ei = float(l.split()[-1])
-				eneiter.append(ei)
-		return np.asarray(eneiter, dtype=np.float64)*u
-	else:
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".scf"
+	
+        if os.path.exists(f):
+	    eneiter = []
+	    with open(self.case+".scf") as scf:
+		lscf = scf.readlines()
+	    for l in lscf:
+		if ":ENE" in l: 
+	            ei = float(l.split()[-1])
+		    eneiter.append(ei)
+	    eneiter = np.asarray(eneiter, dtype=np.float64)*u
+            
+            # NOT TESTED!
+            if write_data:
+                np.savetxt(self.case+"_ENERGY.dat", eneiter, fmt=' %.8f', delimiter=' ', header=':ENERGY data from '+f)
+
+            return np.asarray(eneiter, dtype=np.float64)*u
+        else:
 		print("ERROR: "+self.case+".scf file does not exist")
 
     
     # Not tested!!
-    def eneplot(self, units='Ry', dots='ro-', show=True):
+    # also add a read_file
+    # add color?
+    # raise warning when no units provided!
+    def eneplot(self, units = 'Ry', read_file = None,
+                dots = 'ro-', show = True, save = True):
         '''
         This method plot the evolution of the energy with the iteration number
         '''
         """
         
         Arguments:
-            units : str  : Energy units. 
-                            Options: Ry : Rydberg units
-                                   : eV : Electronvolt units
-            dots  : str  : 
-            dots  : bool : 
+            units : str      : Energy units. 
+                               Options : Ry : Rydberg units
+                                       : eV : Electronvolt units
+            dots  : str      : 
+            dots  : bool     : 
         Returns:
-            out   : None : 
+            out   : NoneType : 
         """
 
-        import matplotlib.pyplot as plt
     
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".scf"
+
         if units != 'Ry' or units != 'eV':
             print("Wrong unit variable: unit = "+str(units)+" unknown")
             print("Setting default Ry units")
             u = 'Ry'
             units = u
 
-        ene = eneiter(units=u)
+        ene = eneiter(units = u, read_file = f)
         fig = plt.figure()
         plt.title('Energy convergence '+self.case+'.scf')
         plt.xlabel('# iteration')
@@ -137,7 +162,10 @@ class wtools(win.wien2k):
 
         if show:
             plt.show()
-        
+        if save:
+            plt.savefig('./'+f+'_ENERGY.pdf') 
+    
+    
     # Not tested!
     # Include restricted options in spin argument   
     def fermi(self, spin = "up"):
@@ -398,7 +426,6 @@ class wtools(win.wien2k):
         Returns:
             out : NoneType : 
         """
-        import matplotlib.pyplot as plt
        
         bands   = wtools(self).spag_ene()
         k_label = wtools(self).label_kband()

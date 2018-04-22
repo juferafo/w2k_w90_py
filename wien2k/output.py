@@ -162,7 +162,12 @@ class output(winput.wien2k):
 
     
     def isclean(self):
-        ext = ['.vec*', '.help*', '.vrespva*', '.vrespco*', '.clmsc0*', '.clmsc1*', '.clmscup0*',\
+        """
+        
+        Returns:
+            out : bool : 
+        """
+         ext = ['.vec*', '.help*', '.vrespva*', '.vrespco*', '.clmsc0*', '.clmsc1*', '.clmscup0*',\
                '.clmscup1*', '.clmscdn0*', '.clmscdn1*', '.clmval_*', '.clmvalup_*', '.clmvaldn_*',\
                '.output1_*_proc*', '.output1up_*_proc*', '.output1dn_*_proc*',\
                '.output2_*', '.output2up_*', '.output2upeece_*', '.output2dn_*', '.output2dneece_*',\
