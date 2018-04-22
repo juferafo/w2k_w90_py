@@ -15,7 +15,12 @@ def ecorb(orb = 'xy', value = 'real'):
         '''
 	# Corrected orbital matrices
        
+        """
 
+        Arguments:
+            orb  : str :
+            value: str :
+        """
         yz_r = (1j/4)*np.array([[     0,    -1,     0,   -1,      0],\
 	                        [     1,     0, sr(6),    0,      1],\
 	                        [     0,-sr(6),     0,-sr(6),     0],\

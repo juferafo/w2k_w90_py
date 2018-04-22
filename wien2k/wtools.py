@@ -29,10 +29,18 @@ class wtools(win.wien2k):
         self.soc  = wincase.soc
 
     # NOT TESTED!
-    def ene(units='Ry'):
+    def ene(self, units='Ry'):
         """
         This definition returns the energy value of the last iteration
         found in the ./case.scf file
+        
+        Arguments:
+            units  : str  : Energy units. 
+                            Options: Ry : Rydberg units
+                                   : eV : Electronvolt units
+    
+        Returns:
+            out    : float : Energy of the last iteration
         """
 	if units == 'Ry':
 	    u = 1.0
@@ -59,10 +67,20 @@ class wtools(win.wien2k):
     # NOT TESTED!
     # optional update: to generate energy.dat file
     def eneiter(self, units='Ry'):
-	'''
-	This method returns the energy evolution with the iteration number
-	'''
-	if units == 'Ry':
+	"""
+        This definition returns the evolution of the energy vwith the iteration number 
+        found in the ./case.scf file
+        
+        Arguments:
+            units : str : Energy units. 
+                            Options: Ry : Rydberg units
+                                   : eV : Electronvolt units
+    
+        Returns:
+            out   : numpy.ndarray : An array containing the energy for all the iterations 
+                                     written in the case.scf file in the selected units
+        """
+        if units == 'Ry':
 		u = 1.0
 	elif units == 'eV':
 		u = 13.605698066
@@ -89,6 +107,17 @@ class wtools(win.wien2k):
         '''
         This method plot the evolution of the energy with the iteration number
         '''
+        """
+        
+        Arguments:
+            units : str  : Energy units. 
+                            Options: Ry : Rydberg units
+                                   : eV : Electronvolt units
+            dots  : str  : 
+            dots  : bool : 
+        Returns:
+            out   : None : 
+        """
 
         import matplotlib.pyplot as plt
     
@@ -110,10 +139,19 @@ class wtools(win.wien2k):
             plt.show()
         
     # Not tested!
+    # Include restricted options in spin argument   
     def fermi(self, spin = "up"):
         '''
         This definition returns the Fermi energy of the calculation
         '''
+        """
+        
+        Arguments:
+            spin : str : 
+    
+        Returns:
+            out : float : Fermi energy of the last iteration
+        """
 	if self.sp:
 		ext = "scf2"+spin
 	else:
@@ -132,10 +170,19 @@ class wtools(win.wien2k):
 
     # Not tested
     # Implement this search with regular expresion
+    # include read_file option?
     def mm(self, at='TOT'):
         '''
         This definition returns the magnetic moment of the atom with <num_atom> in the case.struct
         '''
+        """
+        
+        Arguments:
+            at : str : 
+    
+        Returns:
+            out : float : 
+        """
 	if os.path.exists(self.case+".scf"):
             with open(self.case+".scf") as scf:
 		lscf = scf.readlines()
@@ -168,6 +215,15 @@ class wtools(win.wien2k):
 	'''
 	This definition returns a dictionary with the density matrices of case.dmat/up/dn/ud
 	'''
+        """
+        
+        Arguments:
+            spin : str : 
+            atom : str :
+
+        Returns:
+            out : dict : 
+        """
         if not self.sp:
             spin = '' 
 
@@ -215,7 +271,18 @@ class wtools(win.wien2k):
 	# This is for: case.scfdmup and case.scfdmrotup
 	# from winput import natdm
 	# implement the natdm method! until this this variable will not be used!!!!
+        """
+        
+        Arguments:
+            file_spin : str  :
+            dmat_spin : str  :
+            iatom     : str  :
+            file_read : bool :
 
+        Returns:
+            out : dict          : 
+            out : numpy.ndarray : 
+        """
         if file_read:
             scfile = file_read
 
@@ -265,12 +332,16 @@ class wtools(win.wien2k):
 	else:
 		return dmts[iatom]
 
-
+    # implement a read_file option?
     def label_kband(self):
         '''
         This method returns the label of the high symmetry points of the case.klist_band
         '''
-
+        """
+        
+        Returns:
+            out : dict :
+        """
         with open(self.case+".klist_band", "r") as kb:
            kb = [ l.split() for l in kb ]
         
@@ -284,12 +355,16 @@ class wtools(win.wien2k):
 
         return lk
 
-
+    # Include restriction of in the spin variable
     def spag_ene(self, spin = 'up'):
-        '''
-        carefull! I am forgeting about the Ry to eV conversion!!!!
-        '''
+        """
         
+        Arguments:
+            spin : str :
+
+        Returns:
+            out : dict : 
+        """
         if not self.sp:
             spin = '' 
         
@@ -310,12 +385,19 @@ class wtools(win.wien2k):
 
         return bands
 
-
+    # Change argument c -> color
     def band_plot(self, show = True, save = True, c = '#1f77b4', ene_range = [-10,10]):
-        '''
-        Include read_file option like dos_plot method
-        '''
+        """
+        
+        Arguments:
+            show      : bool :
+            save      : bool :
+            c         : str  :
+            ene_range : list :
 
+        Returns:
+            out : NoneType : 
+        """
         import matplotlib.pyplot as plt
        
         bands   = wtools(self).spag_ene()
@@ -344,13 +426,24 @@ class wtools(win.wien2k):
         if save:
             plt.savefig('./'+self.case+'_bands.pdf')
 
-
+    # include list colors of the differet DOS lines?
     def dos_plot(self, ene_range = [-10,10], spin='up', units='eV', show=True, save=True, read_file = None):
-
         '''
         Update to be done: include the personalized labels
         '''
+        """
+        
+        Arguments:
+            ene_range : list :
+            spin      : str  :
+            units     : str  :
+            show      : bool :
+            save      : bool :
+            readfile  : str  :
 
+        Returns:
+            out : NoneType : 
+        """
 	import matplotlib.pyplot as plt
         
         if read_file:
@@ -372,13 +465,7 @@ class wtools(win.wien2k):
         if os.path.exists(f):
             with open(f, "r") as fdos:
                 fdos = fdos.readlines()
-            
-            '''
-            reat = re.compile("\d:\S+")
-            reat = re.findall(reat, fdos[2]) 
-            print(reat)
-            '''
-            
+
             dos = np.loadtxt(fdos[3:], dtype=np.float64)
             dos_labels = win.wien2k.int(self)
             print(dos_labels)

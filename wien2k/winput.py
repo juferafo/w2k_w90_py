@@ -40,15 +40,21 @@ class wien2k(object):
         self.soc  = soc
         self.case = os.getcwd().split("/")[-1]
 
-
+    # Posible update: match the old and the new format of the Vxc
+    # Raise a WARNING if old format?
     def vxc(self, file_read='in0'):
         """
         This method returns the Exchange-Correlation potential used in the calculation.
         It raises a warning in case of the old format: (5...CA-LDA, 13...PBE-GGA, 11...WC-GGA)
         """
-
-        # Posible update: match the old and the new format of the Vxc
-
+        """
+        
+        Arguments:
+            file_read : str  :               
+    
+        Returns:
+            out       : list :
+        """
         if os.path.exists(self.case+"."+file_read):
             with open(self.case+"."+file_read) as in0:
                 lin0 = in0.readline()
@@ -61,16 +67,29 @@ class wien2k(object):
                 pass
 
             return vxc
+
         else:
             print("ERROR: "+self.case+"."+file_read+" file does not exist")
 
 
+    # Update to be done! Read the :log file to check if 
+    # the x lapw1 -c option was used and then case.in1c was read!
+    # create read_log or something like that
+    # maybe also read_dayfile... I do not know I should organize better this stuff
+    # shit is getting serious
     def RK(self, file_read='in1'):
         '''
         This method returns the R_{min}K_{max} cutoff of the wave function plane-wave expansion found in case.in1
         '''
-
-        # Update to be done! Read the :log file to check if the x lapw1 -c option was used and then case.in1c was read!
+        """
+        
+        Arguments:
+            file_read : str  :               
+    
+        Returns:
+            out       : list :
+        """
+ 
         if os.path.exists(self.case+"."+file_read):
             with open(self.case+"."+file_read) as in1:
                 lin1 = in1.readlines()[1]
@@ -81,6 +100,15 @@ class wien2k(object):
 
 
     def klist(self, file_read='klist'):
+        """
+        
+        Arguments:
+            file_read : str           :               
+    
+        Returns:
+            out       : float         :
+            out       : numpy.ndarray :
+        """
         if os.path.exists(self.case+"."+file_read):
             with open(self.case+"."+file_read) as klist:
                 lklist = klist.readline().split()
