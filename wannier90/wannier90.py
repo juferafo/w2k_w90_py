@@ -15,38 +15,7 @@ email : juferafo(at)hotmail.com
 email2: afonso(at)ifp.tuwien.ac.at
 """
 
-# SUBSTITUTE THIS DEFINITION FOR THE METHOD FROM import wien2k
-def get_case():
-    '''
-    This method returns the ./case name of the directory calculation
-    '''
-    return os.getcwd().split("/")[-1]
-
-
-def get_ham(case = get_case(), spin = '', read_file = None):
-    '''
-    This method returns the hopping hamiltonian as a list of strings
-    '''
-    
-    if read_file:
-        f = read_file
-    else:
-        f = case+"_hr.dat"+spin
-    
-    with open(f, "r") as f:
-        f = f.readlines()
-    
-    l3 = int(f[2].split()[0])
-    header = 3 + l3//15
-    
-    dim = int(f[1].split()[0])
-    
-    '''
-    ham = np.loadtxt(f, skiprows = 3 + l3//15)
-    '''
-
-    return dim, f[header:]
-
+# SUBSTITUTE THE self.case FOR THE METHOD FROM import wien2k 
 
 def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
     
@@ -103,18 +72,35 @@ class hr(object):
     '''
     Describe this and also what it is defined here
     '''
-    def __init__(self, case = get_case(), sp = False, soc = False, spin = ''):
+    # add a read_file or sort of feature?
+    # improve the spin read feature
+    def __init__(self, sp = False, soc = False, spin = '', read_file = None):
+        
         self.sp   = sp
         self.soc  = soc
-        self.case = case
-        self.ham  = get_ham(case, spin)[1]
-        self.dim  = get_ham(case, spin)[0]
+        self.case = os.getcwd().split("/")[-1]
+        self.file = read_file
+        
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+"_hr.dat"+spin
+        with open(f, "r") as f:
+            f = f.readlines()
+        
+        hr_head = 3 + int(int(f[2].split()[0]))//15
+        
+        self.dim  = int(f[1].split()[0])
+        self.ham  = f[hr_head:]    
+
 
     def change_sp(self, sp):
         self.sp = sp
-    
+
+
     def change_soc(self, soc):
         self.soc = soc
+
 
     # Not intensively tested.
     # Print hamiltonian to a matrix and compare with case_hr.dat
@@ -146,8 +132,8 @@ class readin(object):
     This class contains the input
     '''
 
-    def __init__(self, case = get_case(), sp = False, soc = False):
-        self.case = case
+    def __init__(self, sp = False, soc = False):
+        self.case = os.getcwd().split("/")[-1]
         self.sp   = sp
         self.soc  = soc
   
@@ -166,8 +152,9 @@ class readin(object):
     def win(self):
         pass
 
-    def kmesh(case = get_case()):
-        with open(case+".win", "r").readlines() as fin:
+
+    def kmesh(self):
+        with open(self.case+".win", "r").readlines() as fin:
             for i in range(len(fin)):
                 if "begin kpoints" in fin[i]:
                     ib = i
@@ -178,8 +165,8 @@ class readin(object):
         
         return mesh
 
-    def kgrid(case = get_case()):
-        with open(case+".win", "r").readlines() as fin:
+    def kgrid(self):
+        with open(self.case+".win", "r").readlines() as fin:
             for i in range(len(fin)):
                 if "mp_grid" in fin[i]:
                     break
@@ -194,8 +181,8 @@ class readout(object):
     This class contains the input
     '''
 
-    def __init__(self, case = get_case(), sp = False, spin = ''):
-        self.case = case
+    def __init__(self, sp = False, spin = ''):
+        self.case = os.getcwd().split("/")[-1]
         self.sp   = sp
         self.spin = spin
    
@@ -218,11 +205,11 @@ class readout(object):
             pass
 
 
-    def wout(self, case = get_case()):
+    def wout(self):
         '''
         This method returns the content of the case.wout(up/dn) file
         '''
-        with open(case+"wout"+self.spin, "r").readlines as wout:
+        with open(self.case+"wout"+self.spin, "r").readlines as wout:
             wout = [ i.split() for i in wout ] 
         
         return wout
