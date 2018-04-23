@@ -112,7 +112,6 @@ class hr(object):
         rel = re.compile("^\s{3}(-|\s)"+str(R[0])+"\s{3}(-|\s)"+str(R[1])+"\s{3}(-|\s)"+str(R[2]))
         for i in range(len(self.ham)):
             if re.search(rel, self.ham[i]):
-                #print(self.ham[i])
                 break
         
         hR = self.ham[i:i+(self.dim**2)]
@@ -181,13 +180,14 @@ class readout(object):
     This class contains the input
     '''
 
-    def __init__(self, sp = False, spin = ''):
+    def __init__(self, sp = False, spin = '', read_file = None):
         self.case = os.getcwd().split("/")[-1]
         self.sp   = sp
         self.spin = spin
-   
+        self.file = read_file
+
     # Include read_file and read case.woutup
-    def spread(self, spin = "up", orbital = None, read_file = None):
+    def spread(self, spin = "up", orbital = None):
         '''
         This method returns the spreads of the wannier orbitals in the last iteration
         '''
@@ -196,12 +196,20 @@ class readout(object):
         orbital : str :
         """
         
-        f = self.case+"wout"
+        if self.file:
+            f = self.file
+        else:
+            if not self.sp or self.soc:
+                f = self.case+".wout"
+            else:
+                f = self.case+".wout"+self.spin
 
         with open(f, "r") as f:
             f =f.readlines()
-        
+       
         if orbital:
+            pass
+        else:
             pass
 
 

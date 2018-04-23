@@ -26,13 +26,11 @@ klist = case.klist()
 
 #case.int()
 
-wout.band_plot(show = True)
+#wout.band_plot(show = True)
 #wout.dos_plot()
 
-'''
-To be corrected!
+#To be corrected!
 lat = case.strlat(structure = "lacoo3.struct")
-lat = case.atpos(structure = "lacoo3.struct")
+lat = case.strlat()
+atpos = case.atpos()
 print(lat)
-'''
-

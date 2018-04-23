@@ -285,52 +285,26 @@ class wien2k(object):
             for l in lstr:
                 rat = re.compile(u'^ATOM')
                 if re.match(rat,l):
+                    mult = re.findall('\d{1}',lstr[lstr.index(l)+1])[0]
+                    mult = int(mult)
+                    
+                    nat = re.findall('^(\S\s\d*|\S*)', lstr[lstr.index(l)+1+mult])[0]
+                    nat = nat.replace(' ','')
+                    
                     rpos = re.compile(u'\d{1,}\.\d{8}')
                     atpos = re.findall(rpos, l)
                     
-                    mult = re.findall('\d{1}',lstr[lstr.index(l)+1])[0]
-                    mult = int(mult)
+                    ap[nat] = [atpos]
 
-                    nat = re.findall('^(\S*)', lstr[lstr.index(l)+1+mult])[0]
-                    print(atpos)
-                    print(nat)
+                    for i in range(1,mult):
+                        rpos = re.compile(u'\d{1,}\.\d{8}')
+                        atpos = re.findall(rpos, lstr[lstr.index(l)+1+i])
+                        ap[nat].append(atpos)
+            
+            return ap
 
-
-'''
-    def struct_lat(case, ext='struct'):
-
-        # -------> Bug in situations like:  10.254130 10.254130 24.549440 90.000000 90.000000120.000000
-        # -------> Not corrected yet!
-	if os.path.exists(case+"."+ext):
-		
-                with open(case+"."+ext) as fstruct:
-			lstruct = fstruct.readlines()
-		
-                st = {}
-                lat_sym = lstruct[1].split()
-		st['lattice_type'] = lat_sym[0]
-                
-                neqat = lat_sym[lat_sym.index('LATTICE,NONEQUIV.ATOMS:')+1]
-		st['eq_atoms'] = int(float(neqat)) 
-                
-
-
-		units = lstruct[2].split()[-1].split('=')[1]
-		st['units'] = units 
-                
-		l_vec = lstruct[3].split()[0:3]
-		l_ang = lstruct[3].split()[3:]
-		
-		st['lattice_vectors'] = [float(i) for i in l_vec]
-		st['lattice_angles']  = [float(i) for i in l_ang]
-
-		return st
-	else:
-		print("ERROR: "+case+"."+ext+" file does not exist")
-
-'''
-
-
+        else:
+                print("ERROR: "+fstr+" file does not exist")
 
 '''
 Modification to be done to include the l quantum number
