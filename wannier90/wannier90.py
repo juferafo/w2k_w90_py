@@ -11,8 +11,8 @@ import wien2k.wtools as wt
 Coded by Juan Fernandez Afonso
 Institut fur Festkoerperphysik, TU Wien, Austria
 
-email: juferafo(at)hotmail.com
-       afonso(at)ifp.tuwien.ac.at
+email : juferafo(at)hotmail.com
+email2: afonso(at)ifp.tuwien.ac.at
 """
 
 # SUBSTITUTE THIS DEFINITION FOR THE METHOD FROM import wien2k
@@ -126,9 +126,10 @@ class hr(object):
         rel = re.compile("^\s{3}(-|\s)"+str(R[0])+"\s{3}(-|\s)"+str(R[1])+"\s{3}(-|\s)"+str(R[2]))
         for i in range(len(self.ham)):
             if re.search(rel, self.ham[i]):
+                #print(self.ham[i])
                 break
         
-        hR = self.ham[i:i+self.dim]
+        hR = self.ham[i:i+(self.dim**2)]
         hR = [ l.split()[3:] for l in hR ]
 
         hamR = np.zeros((self.dim, self.dim), dtype = np.complex64)
@@ -197,7 +198,26 @@ class readout(object):
         self.case = case
         self.sp   = sp
         self.spin = spin
- 
+   
+    # Include read_file and read case.woutup
+    def spread(self, spin = "up", orbital = None, read_file = None):
+        '''
+        This method returns the spreads of the wannier orbitals in the last iteration
+        '''
+        """
+
+        orbital : str :
+        """
+        
+        f = self.case+"wout"
+
+        with open(f, "r") as f:
+            f =f.readlines()
+        
+        if orbital:
+            pass
+
+
     def wout(self, case = get_case()):
         '''
         This method returns the content of the case.wout(up/dn) file
@@ -206,6 +226,7 @@ class readout(object):
             wout = [ i.split() for i in wout ] 
         
         return wout
+
 
     def wfi_cs(self, iatom):
         '''
