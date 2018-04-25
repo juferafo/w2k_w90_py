@@ -315,87 +315,28 @@ class wien2k(object):
                 print("ERROR: "+fstr+" file does not exist")
 
 
-    # 
-    def natdm(self, c = True, read_file = None):
+    # posible update to nlorb > 1
+    # only implemented for nlorb = 1 and
+    # mode 0 0  r-index, (l,s)index
+    def natdm(self, read_file = None):
         
         if read_file:
             f = read_file
         else:
             f = self.case+".indm"
-            if c:
+            if self.complex:
                 f = f+"c"
 
         if os.path.exists(f):
             with open(f, "r") as f:
                 f = f.readlines()
                 f = [ l.split() for l in f ]
-        n = int(f[1][0])
-        mod = f[-1]
-        print(n)
-        print(mod)
-
-        ndm = {}
-        for l in f[2:]:
-            iatom = l[0]
-            nlorb = l[1]
-            lorb  = l[2] 
             
-            ndm[iatom] = []
-            print(iatom, nlorb, lorb)
-            
+            n = int(f[1][0])
+            ndm = {}
+            for l in f[2:2+n]:
+                ndm[int(l[0])] = int(l[2])
+            return ndm
 
-'''
-Modification to be done to include the l quantum number
-'''
-
-def old_natdm(case, c=False):
-	if (not os.path.exists(case+'.indm')) and (not os.path.exists(case+'.indmc')):
-        	print("ERROR: "+case+".indm(c) file does not exist")
-		return None
-
-	if os.path.exists(case+'.indm'):
-		f = case+'.indm'
-	else:
-		f = case+'.indmc'
-	with open(f) as indm:
-		lindm = indm.readlines()
-
-	nat = int(float(lindm[1].split()[0]))
-	return int(float(nat))
-
-
-	'''
-	TESTING!!!!!
-	natorb = linorb[0].split()[1]
-	natorb = int(float(natorb))
-	
-	iat_nl = {}
-	c = 1
-	for i in range(2, 2+natorb):
-		l = linorb[i].split()
-		iat = int(float(l[0]))
-		inlorb = int(float(l[1]))
-		iat_nl[c] = [iat, inlorb]
-		c += 1	
-
-		jstart = 2+natorb+1
-		j = 0
-		UJ = {}
-		n = 1
-		for k in sorted(iat_nl.keys()):
-			ci = 0
-			for i in range(jstart+j, len(linorb)):
-				uat = linorb[i].split()[0]
-				jat = linorb[i].split()[1]
-				ci += 1
-				n += 1
-				UJ[n] = [float(uat),float(jat)]
-				if ci == iat_nl[k][1]:
-					jstart = 0
-					j = i+1
-					break
-		return UJ, iat_nl 
-
-	else:
-                rint("ERROR: "+case+".inorb file does not exist"
-        '''
+        else:
+            print("ERROR: "+f+" file does not exist")
