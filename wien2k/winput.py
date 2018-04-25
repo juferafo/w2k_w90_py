@@ -17,6 +17,11 @@ sh = os.system
 cd = os.chdir
 
 
+# TO BE DONE:
+#
+# read_log
+# read_day
+
 class wien2k(object):
     """
     This class defines a wien2k calculation object. From it we can obtain information both
@@ -27,21 +32,22 @@ class wien2k(object):
         """
         The wien2k.__init__ constructor contains the following information:
 
-            self.case : str  : case name of the calculation folder
-            self.sp   : bool : True if the calculation includes spin-polarization
-                               Default value False
-            self.soc  : bool : True if the calculation includes spin-orbit coupling
-                               Default value False
+            self.case    : str  : case name of the calculation folder
+            self.complex : bool :
+            self.sp      : bool : True if the calculation includes spin-polarization
+                                  Default value False
+            self.soc     : bool : True if the calculation includes spin-orbit coupling
+                                  Default value False
         """
         
+        self.case    = os.getcwd().split("/")[-1]
+        self.complex = c
         self.sp      = sp
         self.soc     = soc
-        self.complex = c
-        self.case    = os.getcwd().split("/")[-1]
         
     # Posible update: match the old and the new format of the Vxc
     # Raise a WARNING if old format?
-    def vxc(self, file_read='in0'):
+    def vxc(self, file_read = None):
         """
         This method returns the Exchange-Correlation potential used in the calculation.
         It raises a warning in case of the old format: (5...CA-LDA, 13...PBE-GGA, 11...WC-GGA)
@@ -54,13 +60,18 @@ class wien2k(object):
         Returns:
             out       : list :
         """
-        if os.path.exists(self.case+"."+file_read):
-            with open(self.case+"."+file_read) as in0:
-                lin0 = in0.readline()
-            vxc = lin0.split()[1]
+        if file_read:
+            f = file_read
+        else:
+            f = self.case+".in0"
+
+        if os.path.exists(f):
+            with open(f, "r") as f0:
+                l = f0.readline()
+            vxc = l.split()[1]
             try:
                 vxc = int(vxc)
-                print("WARNING: old format for the "+self.case+"."+file_read+" file detected")
+                print("WARNING: old WIEN2K format detected for the "+f+" file")
                 print("(5...CA-LDA, 13...PBE-GGA, 11...WC-GGA)")
             except:
                 pass
@@ -71,9 +82,6 @@ class wien2k(object):
             print("ERROR: "+self.case+"."+file_read+" file does not exist")
 
 
-    # create read_log or something like that
-    # maybe also read_dayfile... I do not know I should organize better this stuff
-    # shit is getting serious
     def RK(self):
         """
         This method returns the RminKmax cutoff of the plane wave expansion found in the case.in1(c) file
@@ -260,12 +268,12 @@ class wien2k(object):
 		units = lstr[2].split()[-1].split('=')[1]
 		st['units'] = units 
                 
-                rlat = re.compile(u'\d{,3}\.\d{6}')
+                rlat = re.compile(u'\d{,3}\.\d{,8}')
                 lat  = re.findall(rlat,lstr[3])
-                st['lattice_vectors'] = lat[:3]
-                st['lattice_angles']  = lat[3:]
-
-		return st
+                for i, j in zip(['a','b','c','alpha','beta','gamma'], lat):
+                    st[i] = float(j)
+                
+                return st
 
         else:
 		print("ERROR: "+case+"."+ext+" file does not exist")
@@ -295,13 +303,12 @@ class wien2k(object):
                     rpos = re.compile(u'\d{1,}\.\d{8}')
                     atpos = re.findall(rpos, l)
                     
-                    ap[nat] = [atpos]
+                    ap[nat] = [[ float(j) for j in atpos]]
 
                     for i in range(1,mult):
                         rpos = re.compile(u'\d{1,}\.\d{8}')
                         atpos = re.findall(rpos, lstr[lstr.index(l)+1+i])
-                        ap[nat].append(atpos)
-            
+                        ap[nat].append([ float(j) for j in atpos ])
             return ap
 
         else:

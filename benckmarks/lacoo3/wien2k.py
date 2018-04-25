@@ -30,7 +30,7 @@ klist = case.klist()
 #wout.dos_plot()
 
 #To be corrected!
-lat = case.strlat(structure = "lacoo3.struct")
 lat = case.strlat()
 atpos = case.atpos()
 print(lat)
+print(atpos)
