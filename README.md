@@ -7,9 +7,13 @@ It also contains a density-matrix class and a quantum-mechanics subpackage which
 among other features, occupation matrix manipulation such as basis transformation or 
 angular/spin momentum projections.
 
-## Prerequisites
+## Requisites
 
-### Python version
+### WIEN2K
+
+This package was implemented and tested for the versions WIEN2k_17.1 and WIEN2k_16.1
+
+### Python
 
 Although this package is tested for Python2.7, the [`__future__`](https://docs.python.org/3/howto/pyporting.html)
 module was used to prevent compatibility problems with Python3.
@@ -19,11 +23,3 @@ module was used to prevent compatibility problems with Python3.
 * [NumPy](https://pypi.python.org/pypi/numpy)
 * [Matplotlib](https://matplotlib.org)
 * [SymPy](http://www.sympy.org/en/index.html)
-
-## Usage
-
-### Importing the package
-
-### Short test case
-
-## Bibliography
