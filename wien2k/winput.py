@@ -23,7 +23,7 @@ class wien2k(object):
     for the imput and output results.
     """
 
-    def __init__(self, sp = False, soc = False):
+    def __init__(self, sp = False, soc = False, c = False):
         """
         The wien2k.__init__ constructor contains the following information:
 
@@ -34,10 +34,11 @@ class wien2k(object):
                                Default value False
         """
         
-        self.sp   = sp
-        self.soc  = soc
-        self.case = os.getcwd().split("/")[-1]
-
+        self.sp      = sp
+        self.soc     = soc
+        self.complex = c
+        self.case    = os.getcwd().split("/")[-1]
+        
     # Posible update: match the old and the new format of the Vxc
     # Raise a WARNING if old format?
     def vxc(self, file_read='in0'):
@@ -70,31 +71,27 @@ class wien2k(object):
             print("ERROR: "+self.case+"."+file_read+" file does not exist")
 
 
-    # Update to be done! Read the :log file to check if 
-    # the x lapw1 -c option was used and then case.in1c was read!
     # create read_log or something like that
     # maybe also read_dayfile... I do not know I should organize better this stuff
     # shit is getting serious
-    def RK(self, file_read='in1'):
-        '''
-        This method returns the R_{min}K_{max} cutoff of the wave function plane-wave expansion found in case.in1
-        '''
+    def RK(self):
         """
-        
-        Arguments:
-            file_read : str  :               
-    
+        This method returns the RminKmax cutoff of the plane wave expansion found in the case.in1(c) file
+
         Returns:
-            out       : list :
+            out : float :
         """
- 
-        if os.path.exists(self.case+"."+file_read):
-            with open(self.case+"."+file_read) as in1:
-                lin1 = in1.readlines()[1]
-            RK = lin1.split()[0]
+        fin1 = self.case+".in1"
+        if self.complex:
+            fin1 = fin1+"c"
+
+        if os.path.exists(fin1):
+            with open(fin1) as f:
+                l = f.readlines()[1]
+            RK = l.split()[0]
             return float(RK)
         else:
-            print("ERROR: "+self.case+"."+file_read+" file does not exist")
+            print("ERROR: "+fin1+" file does not exist")
 
 
     def klist(self, file_read='klist'):
