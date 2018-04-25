@@ -235,7 +235,10 @@ class wien2k(object):
 	else:
 	    print("ERROR: "+self.case+".int file does not exist")
 
-
+    # bug! overlapping angles! fix regular expresion:
+    # {u'units': u'bohr', u'lattice_type': 'P', 
+    #  u'lattice_angles': ['90.000000', '133.411770'],
+    #  u'lattice_vectors': ['12.853804', '12.853804', '10.166103']}
     def strlat(self, structure = None):
         '''
         This method returns the lattice parameters of the given case.struct file
@@ -269,6 +272,7 @@ class wien2k(object):
 
         else:
 		print("ERROR: "+case+"."+ext+" file does not exist")
+
 
     def atpos(self, structure = None):
         if structure:
@@ -306,11 +310,41 @@ class wien2k(object):
         else:
                 print("ERROR: "+fstr+" file does not exist")
 
+
+    # 
+    def natdm(self, c = True, read_file = None):
+        
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".indm"
+            if c:
+                f = f+"c"
+
+        if os.path.exists(f):
+            with open(f, "r") as f:
+                f = f.readlines()
+                f = [ l.split() for l in f ]
+        n = int(f[1][0])
+        mod = f[-1]
+        print(n)
+        print(mod)
+
+        ndm = {}
+        for l in f[2:]:
+            iatom = l[0]
+            nlorb = l[1]
+            lorb  = l[2] 
+            
+            ndm[iatom] = []
+            print(iatom, nlorb, lorb)
+            
+
 '''
 Modification to be done to include the l quantum number
 '''
 
-def natdm(case, c=False):
+def old_natdm(case, c=False):
 	if (not os.path.exists(case+'.indm')) and (not os.path.exists(case+'.indmc')):
         	print("ERROR: "+case+".indm(c) file does not exist")
 		return None
