@@ -23,8 +23,6 @@ def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
 
     w2k = wt.wtools(casew2k).spag_ene()
 
-    print(casew2k.sp)
-
     if casew2k.sp == False:
         spin = ''
 
@@ -74,10 +72,12 @@ class hr(object):
     '''
     # add a read_file or sort of feature?
     # improve the spin read feature
-    def __init__(self, sp = False, soc = False, spin = '', read_file = None):
+    # import wien2k.winput.self? 
+    def __init__(self, sp = False, soc = False, spin = '', read_file = None, auto = False):
         
         self.sp   = sp
         self.soc  = soc
+       
         self.case = os.getcwd().split("/")[-1]
         self.file = read_file
         
@@ -136,21 +136,64 @@ class readin(object):
         self.sp   = sp
         self.soc  = soc
   
-    def inwf(self, spin = "up"):
+    def modeinwf(self, spin = "up", read_file = None):
+        '''
+        This method returns the mode calculation of w2w: BOTH, AMN or MMN
+        '''
         if self.sp:
             ext = spin
         else:
             ext = ''
 
-        with open(self.case+".inwf"+ext) as f:
-            f = [ l.split() for l in f]
+        with open(self.case+".inwf"+ext, "r") as f:
+            mode = f.readline().split()[0]
 
-        return f
+        return mode
+        
+    # Update: raise error/warning if nw != number of projections found in proj
+    def inwfproj(self, spin = "up", read_file = None):
+        '''
+        This method returns the wannier orbitals projections found in read_file or
+        in case.inwf(up/dn)
+        '''
+        if self.sp:
+            ext = spin
+        else:
+            ext = ''
+
+        with open(self.case+".inwf"+ext, "r") as f:
+            f = iter(f.readlines()[2:])
+        
+        nw = next(f).split()[1]
+        proj = {}
+        count_proj = 1
+        for l in f:
+            jump = int(l.split()[0])
+            print(jump)
+            for j in range(jump):
+                proj[count_proj] = next(f).split()[:5]
+                for k in range(len(proj[count_proj])):
+                    if k <= 2:
+                        proj[count_proj][k] = int(float(proj[count_proj][k]))
+                    else:
+                        proj[count_proj][k] = float(proj[count_proj][k])
+
+            count_proj += 1
+        
+        return proj
 
 
-    def win(self):
+    def num_bw(self, spin = "up", read_file = None):
+        if self.sp:
+            ext = spin
+        else:
+            ext = ''
+
+        with open(self.case+".inwf"+ext, "r") as f:
+            f = f.readlines()
+
         pass
-
+    
 
     def kmesh(self):
         with open(self.case+".win", "r").readlines() as fin:
@@ -172,7 +215,6 @@ class readin(object):
 
         kgrid = fin[i].split()[3:]
         return kgrid
-
 
 
 class readout(object):

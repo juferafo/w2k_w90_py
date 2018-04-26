@@ -19,7 +19,7 @@ woutput = wo.output(case)
 
 print(type(case))
 
-vxc = case.vxc(file_read = "blej")
+vxc = case.vxc()
 RK  = case.RK()
 klist = case.klist()
 

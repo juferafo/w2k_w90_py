@@ -27,6 +27,7 @@ class wtools(win.wien2k):
     def __init__(self, wincase):
         self.case = wincase.case
         self.sp   = wincase.sp
+        self.c  = wincase.soc
         self.soc  = wincase.soc
 
     # NOT TESTED!
@@ -66,8 +67,9 @@ class wtools(win.wien2k):
 	            ene = lscf[i].split()[-1]
 		    break
 	    return float(ene)*u
-	else:
-		print("ERROR: "+self.case+".scf file does not exist")
+
+        else:
+            raise IOError("No such file: "+f)
 
 
     # NOT TESTED!
@@ -115,8 +117,9 @@ class wtools(win.wien2k):
                 np.savetxt(self.case+"_ENERGY.dat", eneiter, fmt=' %.8f', delimiter=' ', header=':ENERGY data from '+f)
 
             return np.asarray(eneiter, dtype=np.float64)*u
+        
         else:
-		print("ERROR: "+self.case+".scf file does not exist")
+            raise IOError("No such file: "+f)
 
     
     # Not tested!!
@@ -200,9 +203,6 @@ class wtools(win.wien2k):
     # Implement this search with regular expresion
     # include read_file option?
     def mm(self, at='TOT'):
-        '''
-        This definition returns the magnetic moment of the atom with <num_atom> in the case.struct
-        '''
         """
         
         Arguments:

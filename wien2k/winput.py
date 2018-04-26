@@ -2,6 +2,7 @@
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
+import warnings
 import re
 import numpy as np
 
@@ -37,7 +38,7 @@ class wien2k(object):
         The wien2k.__init__ constructor contains the following information:
 
             self.case    : str  : case name of the calculation folder
-            self.complex : bool :
+            self.c : bool :
             self.sp      : bool : True if the calculation includes spin-polarization
                                   Default value False
             self.soc     : bool : True if the calculation includes spin-orbit coupling
@@ -46,7 +47,7 @@ class wien2k(object):
         
         self.case = os.getcwd().split("/")[-1]
 
-        if auto:
+        if auto and os.path.exists(":log"):
             with open(":log", "r") as log:
                 log = log.readlines()
             
@@ -66,11 +67,15 @@ class wien2k(object):
                     break
 
             [setattr(self, i, False) for i in ['c', 'sp', 'soc'] if not hasattr(self, i)] 
-
+        
         else:
-            self.complex = c
-            self.sp      = sp
-            self.soc     = soc
+            if auto and not os.path.exists(":log"):
+                warnings.showwarning("\nwien2k object in auto = True mode requires :log file.\
+                        Such file does not exist.\nExecution will continue with default attributes set to False.")
+
+            self.c   = c
+            self.sp  = sp
+            self.soc = soc
 
 
     # Posible update: match the old and the new format of the Vxc
@@ -99,8 +104,7 @@ class wien2k(object):
             vxc = l.split()[1]
             try:
                 vxc = int(vxc)
-                print("WARNING: old WIEN2K format detected for the "+f+" file")
-                print("(5...CA-LDA, 13...PBE-GGA, 11...WC-GGA)")
+                warnings.warn("\nOld WIEN2K format detected in "+f+" file: (5...CA-LDA, 13...PBE-GGA, 11...WC-GGA)")
             except:
                 pass
 
@@ -118,7 +122,7 @@ class wien2k(object):
             out : float :
         """
         fin1 = self.case+".in1"
-        if self.complex:
+        if self.c:
             fin1 = fin1+"c"
 
         if os.path.exists(fin1):
@@ -354,7 +358,7 @@ class wien2k(object):
             f = read_file
         else:
             f = self.case+".indm"
-            if self.complex:
+            if self.c:
                 f = f+"c"
 
         if os.path.exists(f):
