@@ -28,7 +28,10 @@ class wien2k(object):
     for the imput and output results.
     """
 
-    def __init__(self, sp = False, soc = False, c = False):
+    # update: autodetect if the calculation is complex/spin-pollarized
+    # for that the auto mode is used
+    # test auto version!!!          
+    def __init__(self, sp = False, soc = False, c = False, auto = True):
         """
         The wien2k.__init__ constructor contains the following information:
 
@@ -40,11 +43,34 @@ class wien2k(object):
                                   Default value False
         """
         
-        self.case    = os.getcwd().split("/")[-1]
-        self.complex = c
-        self.sp      = sp
-        self.soc     = soc
-        
+        self.case = os.getcwd().split("/")[-1]
+
+        if auto:
+            with open(":log", "r") as log:
+                log = log.readlines()
+            
+            re_sp = re.compile('\s(-up|-dn)')
+            re_soc = re.compile('\s(-so)')
+            re_c  = re.compile('\s(-c)')
+            for i in reversed(log):
+                if any( j in i for j in ["init", "run", "dstart"]):
+                    continue
+                if re_soc.search(i) and not hasattr(self, 'soc'):
+                    self.soc = True
+                if re_sp.search(i) and not hasattr(self, 'sp'):
+                    self.sp = True
+                if re_c.search(i) and not hasattr(self, 'c'):
+                    self.c = True
+                if all([hasattr(self, i) for i in ['c', 'sp', 'soc']]):
+                    break
+
+            [setattr(self, i, False) for i in ['c', 'sp', 'soc'] if not hasattr(self, i)] 
+
+        else:
+            self.complex = c
+            self.sp      = sp
+            self.soc     = soc
+
     # Posible update: match the old and the new format of the Vxc
     # Raise a WARNING if old format?
     def vxc(self, file_read = None):
