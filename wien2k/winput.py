@@ -29,6 +29,7 @@ class wien2k(object):
     """
 
     # update: autodetect if the calculation is complex/spin-pollarized
+    # include a self.orb attribute?
     # for that the auto mode is used
     # test auto version!!!          
     def __init__(self, sp = False, soc = False, c = False, auto = True):
@@ -71,6 +72,7 @@ class wien2k(object):
             self.sp      = sp
             self.soc     = soc
 
+
     # Posible update: match the old and the new format of the Vxc
     # Raise a WARNING if old format?
     def vxc(self, file_read = None):
@@ -105,7 +107,7 @@ class wien2k(object):
             return vxc
 
         else:
-            print("ERROR: "+self.case+"."+file_read+" file does not exist")
+            raise IOError("No such file: "+f)
 
 
     def RK(self):
@@ -124,8 +126,9 @@ class wien2k(object):
                 l = f.readlines()[1]
             RK = l.split()[0]
             return float(RK)
+        
         else:
-            print("ERROR: "+fin1+" file does not exist")
+            raise IOError("No such file: "+fin1)
 
 
     def klist(self, file_read='klist'):
@@ -150,7 +153,7 @@ class wien2k(object):
             return kpts, np.asarray([kx, ky, kz], dtype = np.int32)
 	
         else:
-            print("ERROR: "+self.case+"."+file_read+" file does not exist")
+            raise IOError("No such file: "+self.case+"."+file_read)
 
 
     # Not tested!!!
@@ -211,8 +214,8 @@ class wien2k(object):
 
 		return UJ, iat_nl 
 
-	    else:
-                print("ERROR: "+self.case+".inorb file does not exist")
+            else:
+                raise IOError("No such file: "+self.case+".inorb")
 
 
     def hkl_soc(self):
@@ -235,8 +238,8 @@ class wien2k(object):
 	    
             return np.asarray(hkl, dtype = np.int32), no_soc 
 
-	else:
-            print("ERROR: "+self.case+" calculation does not include SOC")
+        else:
+            raise ValueError("Calculation does not include SOC: self.soc "+self.soc)
 
     
     def int(self):
@@ -263,8 +266,9 @@ class wien2k(object):
 	    
             return dos
 	
-	else:
-	    print("ERROR: "+self.case+".int file does not exist")
+        else:
+            raise IOError("No such file: "+self.case+".int")
+
 
     # bug! overlapping angles! fix regular expresion:
     # {u'units': u'bohr', u'lattice_type': 'P', 
@@ -283,26 +287,26 @@ class wien2k(object):
             fstr = self.case+".struct"
 
 	if os.path.exists(fstr):
-                with open(fstr) as fstr:
-			lstr = fstr.readlines()
+            with open(fstr) as fstr:
+		lstr = fstr.readlines()
 		
-                decp = 6
-                st = {}
-                lat_sym = lstr[1].split()
-		st['lattice_type'] = lat_sym[0]
+            decp = 6
+            st = {}
+            lat_sym = lstr[1].split()
+            st['lattice_type'] = lat_sym[0]
+             
+	    units = lstr[2].split()[-1].split('=')[1]
+	    st['units'] = units 
                
-		units = lstr[2].split()[-1].split('=')[1]
-		st['units'] = units 
-                
-                rlat = re.compile(u'\d{,3}\.\d{,8}')
-                lat  = re.findall(rlat,lstr[3])
-                for i, j in zip(['a','b','c','alpha','beta','gamma'], lat):
-                    st[i] = float(j)
-                
-                return st
+            rlat = re.compile(u'\d{,3}\.\d{,8}')
+            lat  = re.findall(rlat,lstr[3])
+            for i, j in zip(['a','b','c','alpha','beta','gamma'], lat):
+                st[i] = float(j)
+            
+            return st
 
         else:
-		print("ERROR: "+case+"."+ext+" file does not exist")
+            raise IOError("No such file: "+fstr)
 
 
     def atpos(self, structure = None):
@@ -338,7 +342,7 @@ class wien2k(object):
             return ap
 
         else:
-                print("ERROR: "+fstr+" file does not exist")
+            raise IOError("No such file: "+fstr)
 
 
     # posible update to nlorb > 1
@@ -365,4 +369,4 @@ class wien2k(object):
             return ndm
 
         else:
-            print("ERROR: "+f+" file does not exist")
+            raise IOError("No such file: "+f)

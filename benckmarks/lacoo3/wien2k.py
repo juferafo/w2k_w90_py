@@ -19,7 +19,7 @@ woutput = wo.output(case)
 
 print(type(case))
 
-vxc = case.vxc()
+vxc = case.vxc(file_read = "blej")
 RK  = case.RK()
 klist = case.klist()
 
@@ -32,5 +32,3 @@ klist = case.klist()
 #To be corrected!
 lat = case.strlat()
 atpos = case.atpos()
-print(lat)
-print(atpos)
