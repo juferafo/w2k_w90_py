@@ -16,9 +16,12 @@ email2: afonso(at)ifp.tuwien.ac.at
 """
 
 # SUBSTITUTE THE self.case FOR THE METHOD FROM import wien2k 
+# raise error if wrong format of casew2k!!
+def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10], show = True, save = True):
+    '''
+    This method plots the band structure with the target wannier bands (orbitals defined in case.inwfup)
+    '''
 
-def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
-    
     import matplotlib.pyplot as plt
 
     w2k = wt.wtools(casew2k).spag_ene()
@@ -63,7 +66,13 @@ def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10]):
 
     plt.ylim(ene_range)
     plt.xlim([-0.000001,w90[b][0][-1]])
-    plt.show()
+    if show:
+        plt.show()
+    if save:
+        plt.savefig('./'+self.case+'_wbands.pdf')
+
+
+
 
 
 class hr(object):
