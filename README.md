@@ -11,7 +11,7 @@ angular/spin momentum projections.
 
 ### WIEN2K
 
-This package was implemented and tested for the versions WIEN2k_17.1 and WIEN2k_16.1
+This package is being implemented and tested for the versions WIEN2k_17.1 and WIEN2k_16.1
 
 ### Python
 
