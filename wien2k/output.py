@@ -5,6 +5,7 @@ import os
 import glob
 import numpy as np
 import wien2k.winput as winput
+import winit
 
 """
 Created by Juan Fernandez Afonso
@@ -34,17 +35,28 @@ def restart_case(path='./', rm_scf=False):
     """
 
     cd(path)
-    case = winput.wien2k().case
+    case = winit.clalc().case
     sh('clean_lapw -s')
     sh('rm '+case+'.*_unmixed')
     if rm_scf:
         sh('rm '+case+'.scf*')
 
 
-class output(winput.wien2k):
+class output(winit.calc):
     """
     This class takes the inheritance from the winput.wien2k objects.
     """
+
+    def __init__(self, wobj):
+
+        if not isinstance(wobj, winit.calc):
+            raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
+
+        self.case = wobj.case
+        self.sp   = wobj.sp
+        self.c    = wobj.c
+        self.soc  = wobj.soc
+
 
     def conviter(self, param='CHARGE'):
         """

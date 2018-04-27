@@ -5,9 +5,8 @@ import os
 import re
 import numpy as np
 import matplotlib.pyplot as plt
-import wien2k.winput as win
 import wien2k.dm     as wdm   
-
+import winit
 """
 Created by Juan Fernandez Afonso
 Institut fur Festkoerperphysik, TU Wien, Austria
@@ -19,16 +18,21 @@ sh = os.system
 cd = os.chdir
 pwd = os.getcwd()
 
-class wtools(win.wien2k):
+class wtools(winit.calc):
     """
     This class takes the inheritance from the winput.wien2k objects.
     """
 
-    def __init__(self, wincase):
-        self.case = wincase.case
-        self.sp   = wincase.sp
-        self.c  = wincase.soc
-        self.soc  = wincase.soc
+    def __init__(self, wobj):
+        
+        if not isinstance(wobj, winit.calc):
+            raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
+        
+        self.case = wobj.case
+        self.sp   = wobj.sp
+        self.c    = wobj.c
+        self.soc  = wobj.soc
+
 
     # NOT TESTED!
     def ene(self, units = 'Ry', read_file = None):

@@ -1,8 +1,9 @@
 #! /usr/bin/env python
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
-import os
 import warnings
+import os
+import re
 
 """
 Coded by Juan Fernandez Afonso
@@ -14,7 +15,9 @@ email2: afonso(at)ifp.tuwien.ac.at
 
 class calc(object):
     """
-    This class defines the wien2k and wannier90 objects common attributes.
+    This class defines the wien2k and wannier90 objects common attributes
+    such as: case, spin-polarization, spin-orbit coupling, complex calculation
+    and auto mode.
     """
 
     # Test the auto mode

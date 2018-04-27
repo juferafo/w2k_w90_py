@@ -5,6 +5,7 @@ import os
 import sys
 import re
 import numpy as np
+import winput
 import wien2k.wtools as wt
 
 """
@@ -75,19 +76,23 @@ def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10], show = 
 
 
 
-class hr(object):
+class hr(winit.calc):
     '''
     Describe this and also what it is defined here
     '''
     # add a read_file or sort of feature?
     # improve the spin read feature
     # import wien2k.winput.self? 
-    def __init__(self, sp = False, soc = False, spin = '', read_file = None, auto = False):
+    def __init__(self, wobj, spin = '', read_file = None):
         
-        self.sp   = sp
-        self.soc  = soc
-       
-        self.case = os.getcwd().split("/")[-1]
+        if not isinstance(wobj, winit.calc):
+            raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
+
+        self.case = wobj.case
+        self.sp   = wobj.sp
+        self.c    = wobj.c
+        self.soc  = wobj.soc
+        self.spin = spin
         self.file = read_file
         
         if read_file:
@@ -135,16 +140,24 @@ class hr(object):
         return hamR
 
 
-class readin(object):
+
+# What about the spin and or read_file?
+class readin(winit.calc):
     '''
     This class contains the input
     '''
 
-    def __init__(self, sp = False, soc = False):
-        self.case = os.getcwd().split("/")[-1]
-        self.sp   = sp
-        self.soc  = soc
-  
+    def __init__(self, wobj):
+        
+        if not isinstance(wobj, winit.calc):
+            raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
+
+        self.case = wobj.case
+        self.sp   = wobj.sp
+        self.c    = wobj.c
+        self.soc  = wobj.soc
+
+    
     def modeinwf(self, spin = "up", read_file = None):
         '''
         This method returns the mode calculation of w2w: BOTH, AMN or MMN

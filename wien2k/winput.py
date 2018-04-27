@@ -5,7 +5,7 @@ import os
 import warnings
 import re
 import numpy as np
-
+import winit
 
 """
 Coded by Juan Fernandez Afonso
@@ -23,61 +23,25 @@ cd = os.chdir
 # read_log
 # read_day
 
-class wien2k(object):
+class wien2k(winit.calc):
     """
     This class defines a wien2k calculation object. From it we can obtain information both
     for the imput and output results.
     """
 
-    # update: autodetect if the calculation is complex/spin-pollarized
     # include a self.orb attribute?
-    # for that the auto mode is used
-    # test auto version!!!          
-    def __init__(self, sp = False, soc = False, c = False, auto = True):
-        """
-        The wien2k.__init__ constructor contains the following information:
+    def __init__(self, wobj):
+       
+        if not isinstance(wobj, winit.calc):
+            raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
 
-            self.case    : str  : case name of the calculation folder
-            self.c : bool :
-            self.sp      : bool : True if the calculation includes spin-polarization
-                                  Default value False
-            self.soc     : bool : True if the calculation includes spin-orbit coupling
-                                  Default value False
-        """
-        
+        self.case = wobj.case
+        self.sp   = wobj.sp
+        self.c    = wobj.c
+        self.soc  = wobj.soc
         self.case = os.getcwd().split("/")[-1]
 
-        if auto and os.path.exists(":log"):
-            with open(":log", "r") as log:
-                log = log.readlines()
-            
-            re_sp = re.compile('\s(-up|-dn)')
-            re_soc = re.compile('\s(-so)')
-            re_c  = re.compile('\s(-c)')
-            for i in reversed(log):
-                if any( j in i for j in ["init", "run", "dstart"]):
-                    continue
-                if re_soc.search(i) and not hasattr(self, 'soc'):
-                    self.soc = True
-                if re_sp.search(i) and not hasattr(self, 'sp'):
-                    self.sp = True
-                if re_c.search(i) and not hasattr(self, 'c'):
-                    self.c = True
-                if all([hasattr(self, i) for i in ['c', 'sp', 'soc']]):
-                    break
-
-            [setattr(self, i, False) for i in ['c', 'sp', 'soc'] if not hasattr(self, i)] 
         
-        else:
-            if auto and not os.path.exists(":log"):
-                warnings.showwarning("\nwien2k object in auto = True mode requires :log file.\
-                        Such file does not exist.\nExecution will continue with default attributes set to False.")
-
-            self.c   = c
-            self.sp  = sp
-            self.soc = soc
-
-
     # Posible update: match the old and the new format of the Vxc
     # Raise a WARNING if old format?
     def vxc(self, file_read = None):
