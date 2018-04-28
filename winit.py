@@ -29,43 +29,29 @@ class calc(object):
             c    : bool : True/False wether the calculation is complex, i.e. -c flag in lapw1.
             soc  : bool : True/False wether the calculation includes or not spin-orbit coupling.
             auto : bool : If True, all the previous variables will be defined automatically.
-                          It requires a :log file from a WIEN2K self-consistent or WANNIER90 calculation. 
+                          Since this option search for files such as case.energy(so)(up/dn), 
+                          it requires to have run a WIEN2K self-consistent or WANNIER90 calculation. 
 
         calc.__init__ attributes defined:
             self.case : str  : case name of the calculation folder.
             self.sp   : bool : True/False wether the calculation includes or not spin-polarization.
-            self.c    : bool : True/False wether the calculation is complex, i.e. -c flag in lapw1.
+            self.c    : bool : True/False wether the calculation is complex, i.e. -c flag in lapw1/2.
             self.soc  : bool : True/False wether the calculation includes or not spin-orbit coupling.
         """
         
         self.case = os.getcwd().split("/")[-1]
 
-        if auto and os.path.exists(":log"):
-            with open(":log", "r") as log:
-                log = log.readlines()
-            
-            re_sp = re.compile('\s(-up|-dn)')
-            re_soc = re.compile('\s(-so)')
-            re_c  = re.compile('\s(-c)')
-            for i in reversed(log):
-                if any( j in i for j in ["init", "run", "dstart"]):
-                    continue
-                if re_soc.search(i) and not hasattr(self, 'soc'):
-                    self.soc = True
-                if re_sp.search(i) and not hasattr(self, 'sp'):
-                    self.sp = True
-                if re_c.search(i) and not hasattr(self, 'c'):
-                    self.c = True
-                if all([hasattr(self, i) for i in ['c', 'sp', 'soc']]):
-                    break
-
+        if auto:
+            if os.path.exists(self.case+".enegryup") or os.path.exists(self.case+".enegrydn"):
+                self.sp = True
+            if os.path.exists(self.case+".in1c") or os.path.exists(self.case+".in2c") or os.path.exists(self.case+".indmc"):
+                self.c = True 
+            if os.path.exists(self.case+".energysoup") or os.path.exists(self.case+".energysodn"):
+                self.soc = True
+    
             [setattr(self, i, False) for i in ['c', 'sp', 'soc'] if not hasattr(self, i)] 
-        
-        else:
-            if auto and not os.path.exists(":log"):
-                warnings.showwarning("\nwien2k object in auto = True mode requires :log file.\
-                        Such file does not exist.\nExecution will continue with default class attributes set to False.")
 
+        else:
             self.c   = c
             self.sp  = sp
             self.soc = soc

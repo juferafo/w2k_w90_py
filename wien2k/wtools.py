@@ -5,7 +5,7 @@ import os
 import re
 import numpy as np
 import matplotlib.pyplot as plt
-import wien2k.dm     as wdm   
+import wien2k.dm as wdm   
 import winit
 """
 Created by Juan Fernandez Afonso
@@ -64,7 +64,7 @@ class wtools(winit.calc):
             f = self.case+".scf"
 
 	if os.path.exists(f):
-	    with open(self.case+".scf", "r") as scf:
+	    with open(f, "r") as scf:
 		lscf = scf.readlines()
 	    for i in range(len(lscf)-1,-1,-1):
 		if ":ENE" in lscf[i]: 
@@ -108,7 +108,7 @@ class wtools(winit.calc):
 	
         if os.path.exists(f):
 	    eneiter = []
-	    with open(self.case+".scf") as scf:
+	    with open(f) as scf:
 		lscf = scf.readlines()
 	    for l in lscf:
 		if ":ENE" in l: 
@@ -118,7 +118,7 @@ class wtools(winit.calc):
             
             # NOT TESTED!
             if write_data:
-                np.savetxt(self.case+"_ENERGY.dat", eneiter, fmt=' %.8f', delimiter=' ', header=':ENERGY data from '+f)
+                np.savetxt(self.case+"_ENERGY.dat", eneiter, fmt=' %.8f', delimiter=' ', header=':ENE data from '+f)
 
             return np.asarray(eneiter, dtype=np.float64)*u
         
@@ -174,8 +174,7 @@ class wtools(winit.calc):
     
     
     # Not tested!
-    # Include restricted options in spin argument   
-    def fermi(self, spin = "up"):
+    def fermi(self, spin = "", read_file = None):
         '''
         This definition returns the Fermi energy of the calculation
         '''
@@ -187,13 +186,15 @@ class wtools(winit.calc):
         Returns:
             out : float : Fermi energy of the last iteration
         """
-	if self.sp:
-		ext = "scf2"+spin
-	else:
-		ext = "scf2"
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".scf2"
+            if self.sp and spin:
+                f = f+spin
 
-	if os.path.exists(self.case+"."+ext):
-		with open(self.case+"."+ext) as scf2:
+	if os.path.exists(f):
+		with open(f, "r") as scf2:
 		    lscf2 = scf2.readlines()
 		for l in lscf2:
 		    if ":FER" in l:
@@ -203,10 +204,17 @@ class wtools(winit.calc):
 	else:
                 print("ERROR: "+self.case+"."+ext+" file does not exist")
 
+
     # Not tested
+    # check the type with proper python function
     # Implement this search with regular expresion
     # include read_file option?
-    def mm(self, at='TOT'):
+    # raise error is at != TOT or INT
+    # correct bugs
+    def scfmm(self):
+        return None
+
+    def mm(self, at = 'TOT', read_file = None):
         """
         
         Arguments:
@@ -215,32 +223,40 @@ class wtools(winit.calc):
         Returns:
             out : float : 
         """
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".scf"
+
 	if os.path.exists(self.case+".scf"):
-            with open(self.case+".scf") as scf:
-		lscf = scf.readlines()
-	    for i in range(len(lscf)-1,-1,-1):
-		if type(at) == str:
-			if at == 'TOT' or at == 'INT':	
-				search = 'MM'+at
-			else:
-				print("ERROR: wrong choice of variable 'at'")
-				return None
+	    if isinstance(at, str):
+                if at not in ['TOT', 'INT']:
+                    raise ValueError('wrong choice of variable in wtools.mm')
+		
+                search = 'MM'+at
+                re_mm = re.compile('^:MM'+at+':')
+	    else:
+                re_mm = re.compile(re.compile('^:MM(I|TOT)(0)*'+at))
+		if at < 10 and at > 0:
+		    search = 'MMI00'+str(at)
+		elif at >= 10 and at < 100:
+		    search = 'MMI0'+str(at)
+		elif at >= 100 and at < 1000:
+		    search = 'MMI'+str(at)
 		else:
-			if at < 10 and at > 0:
-				search = 'MMI00'+str(at)
-			elif at >= 10 and at < 100:
-				search = 'MMI0'+str(at)
-			elif at >= 100 and at < 1000:
-				search = 'MMI'+str(at)
-			else:
-				print("ERROR: wrong value of atom label in variable 'at'")
-				return None
-		if search in lscf[i]:
-			mi = float(lscf[i].split()[-1])
-			return mi
-			break
-		else:
-	            print("ERROR: "+self.case+".scf file does not exist")
+		    print("ERROR: wrong value of atom label in variable 'at'")
+		    return None
+
+            with open(f, "r") as f:
+		f = f.readlines()
+	    
+            for i in range(len(f)-1,-1,-1):
+		if search in f[i]:
+	            mi = float(f[i].split()[-1])
+		    return mi
+		    break
+	else:
+	    print("ERROR: "+f+" file does not exist")
 
 
     def dmat(self, spin = "up", atom=''):
@@ -340,7 +356,6 @@ class wtools(winit.calc):
         rdm = re.compile('(Density matrix )(UPUP|DNDN|UPDN)')
 	
 	for i in range(len(lscfdm)):
-            # Identify this with a regular expresion!
             if re.search(rdm, lscfdm[i]):
                 #if ' Density matrix '+spin+' block,' in lscfdm[i]:
     		L = int(lscfdm[i].split()[-1])
@@ -519,7 +534,19 @@ class wtools(winit.calc):
         else:
 	    print("Not possible to read input "+f)
 
-        
+
+    def scfmmiat(self, read_file = None):
+
+        if read_file:
+            f = read_file
+        else:
+            pass
+
+        return None
+
+
+
+
 def get_case():
     return None
 
@@ -600,7 +627,7 @@ def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
 
 ##################################
 ##################################
-#    TESTED UNTIL HERE           #
+#    NOT TESTED                  #
 ##################################
 ##################################
 

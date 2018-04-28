@@ -11,13 +11,15 @@ import winit
 Coded by Juan Fernandez Afonso
 Institut fur Festkoerperphysik, TU Wien, Austria
 
-email: juferafo(at)hotmail.com
+email : juferafo(at)hotmail.com
+email2: afonso(at)ifp.tuwien.ac.at
 """
 
 sh = os.system
 cd = os.chdir
 
-
+# Remove all the IOError due to no such file?
+#
 # TO BE DONE:
 #
 # read_log
@@ -39,11 +41,9 @@ class wien2k(winit.calc):
         self.sp   = wobj.sp
         self.c    = wobj.c
         self.soc  = wobj.soc
-        self.case = os.getcwd().split("/")[-1]
 
         
     # Posible update: match the old and the new format of the Vxc
-    # Raise a WARNING if old format?
     def vxc(self, file_read = None):
         """
         This method returns the Exchange-Correlation potential used in the calculation.
@@ -78,28 +78,31 @@ class wien2k(winit.calc):
             raise IOError("No such file: "+f)
 
 
-    def RK(self):
+    def RK(self, read_file = None):
         """
         This method returns the RminKmax cutoff of the plane wave expansion found in the case.in1(c) file
 
         Returns:
             out : float :
         """
-        fin1 = self.case+".in1"
-        if self.c:
-            fin1 = fin1+"c"
+        if read_file:
+            f = read_file
+        elif self.c and os.path.exists(self.case+".in1c"):
+            f = self.case+"in1c"
+        else:
+            f = self.case+".in1"
 
-        if os.path.exists(fin1):
-            with open(fin1) as f:
+        if os.path.exists(f):
+            with open(f, "r") as f:
                 l = f.readlines()[1]
             RK = l.split()[0]
             return float(RK)
         
         else:
-            raise IOError("No such file: "+fin1)
+            raise IOError("No such file: "+f)
 
 
-    def klist(self, file_read='klist'):
+    def klist(self, read_file = None):
         """
         
         Arguments:
@@ -109,9 +112,14 @@ class wien2k(winit.calc):
             out       : float         :
             out       : numpy.ndarray :
         """
-        if os.path.exists(self.case+"."+file_read):
-            with open(self.case+"."+file_read) as klist:
-                lklist = klist.readline().split()
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".klist"
+
+        if os.path.exists(f):
+            with open(f, "r") as f:
+                lklist = f.readline().split()
 	
             kpts = int(float(lklist[8]))
             kx = lklist[12]
@@ -121,19 +129,22 @@ class wien2k(winit.calc):
             return kpts, np.asarray([kx, ky, kz], dtype = np.int32)
 	
         else:
-            raise IOError("No such file: "+self.case+"."+file_read)
+            raise IOError("No such file: "+f)
 
 
-    # Not tested!!!
-    def uj(self, units='Ry'):
+    def uj(self, units = 'Ry', read_file = None):
         '''
         This method returns the U and J values found in case.inorb for every atom. 
         it works in the LDA+U mode for nmod=1 in case.inorb
         '''
-
-        if os.path.exists(self.case+".inorb"):
-            with open(self.case+".inorb") as finorb:
-                linorb = finorb.readlines()
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".inorb"
+        
+        if os.path.exists(f):
+            with open(f, "r") as f:
+                linorb = f.readlines()
 
 	    if units == 'Ry':
 	        u = 1.0
@@ -145,22 +156,20 @@ class wien2k(winit.calc):
 		u = 1.0
 
 	    nmod = linorb[0].split()[0]
-            
             if int(float(nmod)) != 1:
-	        print("Python method uj only valid for LDA+U calculations with nmod = 1 in "+self.case+"inorb")
-	    	return None
+	        raise ValueError("winput.wien2k method uj only valid for LDA+U calculations with nmod = 1 in "+f)
 
 	    natorb = linorb[0].split()[1]
 	    natorb = int(float(natorb))
 		
 	    iat_nl = {}
 	    c = 1
-	    
             for i in range(2, 2+natorb):
 		l = linorb[i].split()
-		iat = int(float(l[0]))
-		inlorb = int(float(l[1]))
-		iat_nl[c] = [iat, inlorb]
+		iat    = int(l[0])
+		inlorb = int(l[1])
+                ilorb  = int(l[2])
+		iat_nl[c] = [iat, inlorb, ilorb]
 		c += 1	
 
 	    jstart = 2+natorb+1
@@ -172,33 +181,37 @@ class wien2k(winit.calc):
 	    	for i in range(jstart+j, len(linorb)):
                     uat = linorb[i].split()[0]
                     jat = linorb[i].split()[1]
+                    UJ[n] = [float(uat),float(jat)]
                     ci += 1
                     n += 1
-                    UJ[n] = [float(uat),float(jat)]
-                    if ci == iat_nl[k][1]:
+                    if ci == iat_nl[k][1]+1:
                         jstart = 0
         		j = i+1
                         break
 
 		return UJ, iat_nl 
 
-            else:
-                raise IOError("No such file: "+self.case+".inorb")
+        else:
+            raise IOError("No such file: "+f)
 
 
-    def hkl_soc(self):
+    def hkl_soc(self, read_file = None):
         """
         This method returns the (h, k, l) values of the SOC field direction and
         the number of atoms without spin-orbit interaction.
         """
-
         if self.soc:
-            with open(self.case+".inso") as finso:
-                finso = finso.readlines()
-	
-            hkl = finso[3].split()[:3]
+            if read_file:
+                f = read_file
+            else:
+                f = self.case+".inso"
 
-            no_soc = finso[len(finso)-1].split()
+            with open(f, "r") as f:
+                f = f.readlines()
+	
+            hkl = f[3].split()[:3]
+
+            no_soc = f[len(f)-1].split()
             if no_soc[0] == '0':
                 no_soc = []
             else:
@@ -210,7 +223,7 @@ class wien2k(winit.calc):
             raise ValueError("Calculation does not include SOC: self.soc "+self.soc)
 
     
-    def int(self):
+    def int(self, read_file = None):
         '''
         This method returns the orbitals for which the DOS is calculated in case.int
         '''
@@ -219,9 +232,13 @@ class wien2k(winit.calc):
         Returns:
             out : dict :
         """
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".int"
 
-        if os.path.exists(self.case+".int"):
-            with open(self.case+".int") as fint:
+        if os.path.exists(f):
+            with open(f, "r") as fint:
                 fint = fint.readlines()
 
             dos = {}
@@ -237,19 +254,15 @@ class wien2k(winit.calc):
         else:
             raise IOError("No such file: "+self.case+".int")
 
-
-    # bug! overlapping angles! fix regular expresion:
-    # {u'units': u'bohr', u'lattice_type': 'P', 
-    #  u'lattice_angles': ['90.000000', '133.411770'],
-    #  u'lattice_vectors': ['12.853804', '12.853804', '10.166103']}
-    def strlat(self, structure = None):
+    # Possible update: Read space group
+    def strlat(self, read_file = None):
         '''
         This method returns the lattice parameters of the given case.struct file
         
         Possible update: Read the spacegroup!
         '''
 
-        if structure:
+        if read_file:
             fstr = structure
         else:
             fstr = self.case+".struct"
@@ -258,7 +271,6 @@ class wien2k(winit.calc):
             with open(fstr) as fstr:
 		lstr = fstr.readlines()
 		
-            decp = 6
             st = {}
             lat_sym = lstr[1].split()
             st['lattice_type'] = lat_sym[0]
@@ -277,8 +289,8 @@ class wien2k(winit.calc):
             raise IOError("No such file: "+fstr)
 
 
-    def atpos(self, structure = None):
-        if structure:
+    def atpos(self, read_file = None):
+        if read_file:
             fstr = structure
         else:
             fstr = self.case+".struct"
@@ -317,7 +329,6 @@ class wien2k(winit.calc):
     # only implemented for nlorb = 1 and
     # mode 0 0  r-index, (l,s)index
     def natdm(self, read_file = None):
-        
         if read_file:
             f = read_file
         else:
