@@ -41,6 +41,7 @@ class wien2k(winit.calc):
         self.sp   = wobj.sp
         self.c    = wobj.c
         self.soc  = wobj.soc
+        self.orb  = wobj.orb
 
         
     # Posible update: match the old and the new format of the Vxc
@@ -88,7 +89,7 @@ class wien2k(winit.calc):
         if read_file:
             f = read_file
         elif self.c and os.path.exists(self.case+".in1c"):
-            f = self.case+"in1c"
+            f = self.case+".in1c"
         else:
             f = self.case+".in1"
 
@@ -139,60 +140,56 @@ class wien2k(winit.calc):
         '''
         if read_file:
             f = read_file
-        else:
+        elif self.orb:
             f = self.case+".inorb"
-        
-        if os.path.exists(f):
-            with open(f, "r") as f:
-                linorb = f.readlines()
-
-	    if units == 'Ry':
-	        u = 1.0
-	    elif units == 'eV':
-	        u = 13.605698066
-	    else:
-	        print("Wrong unit variable: unit = "+str(units)+" unknown")
-	        print("Setting default Ry units")
-		u = 1.0
-
-	    nmod = linorb[0].split()[0]
-            if int(float(nmod)) != 1:
-	        raise ValueError("winput.wien2k method uj only valid for LDA+U calculations with nmod = 1 in "+f)
-
-	    natorb = linorb[0].split()[1]
-	    natorb = int(float(natorb))
-		
-	    iat_nl = {}
-	    c = 1
-            for i in range(2, 2+natorb):
-		l = linorb[i].split()
-		iat    = int(l[0])
-		inlorb = int(l[1])
-                ilorb  = int(l[2])
-		iat_nl[c] = [iat, inlorb, ilorb]
-		c += 1	
-
-	    jstart = 2+natorb+1
-	    j = 0
-	    UJ = {}
-	    n = 1
-	    for k in sorted(iat_nl.keys()):
-	    	ci = 0
-	    	for i in range(jstart+j, len(linorb)):
-                    uat = linorb[i].split()[0]
-                    jat = linorb[i].split()[1]
-                    UJ[n] = [float(uat),float(jat)]
-                    ci += 1
-                    n += 1
-                    if ci == iat_nl[k][1]+1:
-                        jstart = 0
-        		j = i+1
-                        break
-
-		return UJ, iat_nl 
-
         else:
-            raise IOError("No such file: "+f)
+            raise ValueError('wtools.self.orb '+self.orb+'. \
+                    Calculation does not include orbital dependent Coulomb interaction U.')
+        
+        with open(f, "r") as f:
+            linorb = f.readlines()
+
+	if units == 'Ry':
+	    u = 1.0
+	elif units == 'eV':
+	    u = 13.605698066
+	else:
+	    print("Wrong unit variable: unit = "+str(units)+" unknown")
+	    print("Setting default Ry units")
+	    u = 1.0
+
+	nmod = linorb[0].split()[0]
+        if int(float(nmod)) != 1:
+	    raise ValueError("winput.wien2k method uj only valid for LDA+U calculations with nmod = 1 in "+f)
+
+	natorb = int(linorb[0].split()[1])
+		    
+	iat_nl = {}
+        for i, c in zip(range(2, 2+natorb), range(1,natorb+1)):
+	    l = linorb[i].split()
+	    iat    = int(l[0])
+	    inlorb = int(l[1])
+            ilorb  = int(l[2])
+	    iat_nl[c] = [iat, inlorb, ilorb]
+
+	jstart = 2+natorb+1
+	j = 0
+	UJ = {}
+	n = 1
+	for k in sorted(iat_nl.keys()):
+	    ci = 0
+	    for i in range(jstart+j, len(linorb)):
+                uat = linorb[i].split()[0]
+                jat = linorb[i].split()[1]
+                UJ[n] = [float(uat),float(jat)]
+                ci += 1
+                n += 1
+                if ci == iat_nl[k][1]+1:
+                    jstart = 0
+        	    j = i+1
+                    break
+
+	return UJ, iat_nl 
 
 
     def hkl_soc(self, read_file = None):
@@ -300,7 +297,6 @@ class wien2k(winit.calc):
                 lstr = fstr.readlines()[4:]
 	    
             ap = {}
-            
             for l in lstr:
                 rat = re.compile(u'^ATOM')
                 if re.match(rat,l):

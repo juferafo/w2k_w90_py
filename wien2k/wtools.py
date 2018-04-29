@@ -211,12 +211,38 @@ class wtools(winit.calc):
     # include read_file option?
     # raise error is at != TOT or INT
     # correct bugs
-    def scfmm(self):
-        return None
+    def mmiter(self, at = 'TOT', write_data = None, read_file = None):
+        if read_file:
+            fin = read_file
+        else:
+            fin = self.case+".scf"
+
+        with open(fin, "r") as f:
+	    f = f.readlines()
+
+        if isinstance(at, str) or isinstance(at, unicode):
+            if at not in ['TOT', 'INT']:
+                raise ValueError('wrong choice of "at" variable in wtools.mm')
+            re_mm = re.compile('^:MM'+at+':')
+	else:
+            re_mm = re.compile('^:MM(I|TOT)(0)*'+str(at))
+    
+        mmiter = []
+        for i in range(len(f)):
+	    if re_mm.search(f[i]):
+	        mi = float(f[i].split()[-1])
+                mmiter.append(mi)
+        mmiter = np.asarray(mmiter, dtype=np.float64)
+
+        if write_data:
+            np.savetxt(self.case+"_MM"+str(at)+".dat", mmiter, fmt=str(' % .5f'), delimiter=' ',\
+                       header=':MAGNETIC MOMENT '+str(at)+' data from '+fin)
+
+        return np.asarray(mmiter, dtype=np.float64)
+
 
     def mm(self, at = 'TOT', read_file = None):
         """
-        
         Arguments:
             at : str : 
     
@@ -226,37 +252,22 @@ class wtools(winit.calc):
         if read_file:
             f = read_file
         else:
-            f = self.case+".scf"
+            f = self.case+".scfm"
 
-	if os.path.exists(self.case+".scf"):
-	    if isinstance(at, str):
-                if at not in ['TOT', 'INT']:
-                    raise ValueError('wrong choice of variable in wtools.mm')
-		
-                search = 'MM'+at
-                re_mm = re.compile('^:MM'+at+':')
-	    else:
-                re_mm = re.compile(re.compile('^:MM(I|TOT)(0)*'+at))
-		if at < 10 and at > 0:
-		    search = 'MMI00'+str(at)
-		elif at >= 10 and at < 100:
-		    search = 'MMI0'+str(at)
-		elif at >= 100 and at < 1000:
-		    search = 'MMI'+str(at)
-		else:
-		    print("ERROR: wrong value of atom label in variable 'at'")
-		    return None
-
-            with open(f, "r") as f:
-		f = f.readlines()
-	    
-            for i in range(len(f)-1,-1,-1):
-		if search in f[i]:
-	            mi = float(f[i].split()[-1])
-		    return mi
-		    break
+        with open(f, "r") as f:
+	    f = f.readlines()
+        
+        if isinstance(at, str) or isinstance(at, unicode):
+            if at not in ['TOT', 'INT']:
+                raise ValueError('wrong choice of "at" variable in wtools.mm')
+            re_mm = re.compile('^:MM'+at+':')
 	else:
-	    print("ERROR: "+f+" file does not exist")
+            re_mm = re.compile('^:MM(I|TOT)(0)*'+str(at))
+
+        for i in range(len(f)-1,-1,-1):
+	    if re_mm.search(f[i]):
+	        mi = float(f[i].split()[-1])
+		return mi
 
 
     def dmat(self, spin = "up", atom=''):
@@ -622,100 +633,3 @@ def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
 		return dmts
 	else:
 		return dmts[iatom]
-
-
-
-##################################
-##################################
-#    NOT TESTED                  #
-##################################
-##################################
-
-def scfvorb(case, spin = ''):
-	if os.path.exists(case+'.scforb'+spin):
-		nat = natdm(case)	
-		with open(case+'.scforb'+spin) as scforb:
-			lscforb = scforb.readlines()
-		
-		ats = {}
-		for i in range(1, len(lscforb)):
-			if 'Atom' in lscforb[i]: 
-				l = lscforb[i].split()
-				ati = int(float(l[1]))
-				atl = int(float(l[3]))
-				atu = float(l[5])
-				atj = float(l[7])
-				ats[ati] = [atl, atu, atj]
-			if ':EORB:' in lscforb[i]:
-				break
-
-		def read_vorbi(L_at, lines):
-			vorbi = []
-			for l in lines:
-				l = l.split()
-				l = l[len(l)-2*L_at-1:]
-				vorbi.append(l)
-
-			return np.asarray(vorbi, dtype=np.float64)
-
-		vorb_ats = {}
-		for a in ats.keys():
-			for j in range(i, len(lscforb)):
-				if 'Atom' in lscforb[j] and str(a) in lscforb[j] and 'Potential real part (Ry)' in lscforb[j]:
-					break
-			L_at = ats[a][0]
-			jump = 2
-			lines_re = lscforb[j+1:j+1+2*L_at+1]
-			lines_im = lscforb[j+1+2*L_at+1+jump:j+1+2*L_at+1+jump+2*L_at+1]
-			vorbi_re = read_vorbi(L_at, lines_re)
-			vorbi_im = read_vorbi(L_at, lines_im)
-			vorb_ats[a] = vorbi_re + 1j*vorbi_im
-
-		return ats, vorb_ats
-
-	else:
-		print("ERROR: "+case+".scforb"+spin+" file does not existi")
-		return None
-
-
-
-def vorb(case, spin = ''):
-	"""
-	Reads vorb potential from case.vorb(up/dn) file
-	"""
-	if os.path.exists(case+'.vorb'+spin):
-		with open(case+'.vorb'+spin) as vorb:
-			lv = vorb.readlines()
-		
-		nat = int(float(lv[0].split()[2]))
-		
-		vorb_ats = {}
-		it = iter(range(1,len(lv)))
-		for i in it:
-			print(i)
-			print(lv[i])
-			if 'L, modus, U, J (Ry)' in lv[i]:
-				ati = int(float(lv[i-1].split()[0]))
-				li = int(float(lv[i].split()[0]))
-				ui = float(lv[i].split()[2])
-				ji = float(lv[i].split()[3])
-				
-				vorbi = np.loadtxt(lv[i+1:i+1+(2*li+1)**2], dtype = np.float64)
-				vorbi_re = vorbi[:,0].reshape((2*li+1,2*li+1))
-				vorbi_im = vorbi[:,1].reshape((2*li+1,2*li+1))
-				print(ati)
-				print(vorbi_re.round(3))
-				print()
-				print(vorbi_im.round(3))
-
-				vorb_ats[ati] = vorbi_re + 1j*vorbi_im
-				if len(vorb_ats) < nat:
-					[it.next() for x in range((2*li+1)**2+1)]
-				else:
-					break
-
-		return vorb_ats
-
-	else:
-		print("ERROR: "+case+".vorb"+spin+" file does not exist")
-		return None
