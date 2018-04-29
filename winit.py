@@ -22,12 +22,14 @@ class calc(object):
 
     # Test the auto mode
     # link this constructor with the wannier90 and wien2k classes
-    def __init__(self, sp = False, soc = False, c = False, auto = True):
+    def __init__(self, sp = False, c = False, soc = False, orb = False, auto = True):
         """
         Input:
             sp   : bool : True/False wether the calculation includes or not spin-polarization.
             c    : bool : True/False wether the calculation is complex, i.e. -c flag in lapw1.
             soc  : bool : True/False wether the calculation includes or not spin-orbit coupling.
+            orb  : bool : True/False wether the calculation includes Coulomb U interaction for
+                          strongly correlated orbitals.
             auto : bool : If True, all the previous variables will be defined automatically.
                           Since this option search for files such as case.energy(so)(up/dn), 
                           it requires to have run a WIEN2K self-consistent or WANNIER90 calculation. 
@@ -37,6 +39,8 @@ class calc(object):
             self.sp   : bool : True/False wether the calculation includes or not spin-polarization.
             self.c    : bool : True/False wether the calculation is complex, i.e. -c flag in lapw1/2.
             self.soc  : bool : True/False wether the calculation includes or not spin-orbit coupling.
+            self.orb  : bool : True/False wether the calculation includes or not Coulomb U interaction.
+                               x orb -up/dn/ud in WIEN2k self-consistency.
         """
         
         self.case = os.getcwd().split("/")[-1]
@@ -44,14 +48,17 @@ class calc(object):
         if auto:
             if os.path.exists(self.case+".enegryup") or os.path.exists(self.case+".enegrydn"):
                 self.sp = True
-            if os.path.exists(self.case+".in1c") or os.path.exists(self.case+".in2c") or os.path.exists(self.case+".indmc"):
+            if os.path.exists(self.case+".in1c") or os.path.exists(self.case+".in2c"):
                 self.c = True 
             if os.path.exists(self.case+".energysoup") or os.path.exists(self.case+".energysodn"):
                 self.soc = True
+            if os.path.exists(self.case+".vorbup") or os.path.exists(self.case+".vorbdn"):
+                self.orb = True
     
             [setattr(self, i, False) for i in ['c', 'sp', 'soc'] if not hasattr(self, i)] 
 
         else:
-            self.c   = c
             self.sp  = sp
+            self.c   = c
             self.soc = soc
+            self.orb = orb

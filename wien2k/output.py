@@ -4,7 +4,6 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 import os
 import glob
 import numpy as np
-import wien2k.winput as winput
 import winit
 
 """
@@ -17,9 +16,9 @@ email: juferafo(at)hotmail.com
 
 sh = os.system
 cd = os.chdir
-pwd = os.getcwd()
 
-# Not executed with sh()
+# Still not tested with sh()
+# TO BE TESTED
 def restart_case(path='./', rm_scf=False):
     """
     This method executes clean_lapw -s in the <path> directory.
@@ -44,7 +43,7 @@ def restart_case(path='./', rm_scf=False):
 
 class output(winit.calc):
     """
-    This class takes the inheritance from the winput.wien2k objects.
+    This class takes the inheritance from the winit.calc objects.
     """
 
     def __init__(self, wobj):
@@ -58,7 +57,7 @@ class output(winit.calc):
         self.soc  = wobj.soc
 
 
-    def conviter(self, param='CHARGE'):
+    def conviter(self, param = 'CHARGE', read_file = None):
         """
         
         Arguments:
@@ -71,26 +70,27 @@ class output(winit.calc):
                                      selected parameter for all the iterations written 
                                      in case.dayfile.
         """
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".dayfile"
+
         if param not in ['CHARGE', 'ENERGY']:
-	    print("ERROR: param variable not correct in wtools.conviter")
-            return None
+	    raise ValueError('wrong choice of "param" variable in output.conviter method')
 	
-        if os.path.exists(self.case+".dayfile"):
-		with open(self.case+".dayfile") as df:
-		    ldf = df.readlines()
-                
-                c = []
-                for l in ldf:
-                    if param in l: 
-		        ci = l.split()[-1]
-		        c.append(ci)
+	with open(f, "r") as df:
+	    ldf = df.readlines()
+               
+        c = []
+        for l in ldf:
+            if param in l: 
+	        ci = l.split()[-1]
+		c.append(ci)
 
-                return np.asarray(c, dtype=np.float64) 
-	else:
-		print("ERROR: "+self.case+".dayfile file does not exist")
+        return np.asarray(c, dtype=np.float64) 
 
 
-    def conv(self, param='CHARGE'):
+    def conv(self, param='CHARGE', read_file = None):
         '''
         This method returns the convergence of the last iteration
         '''
@@ -105,25 +105,24 @@ class output(winit.calc):
             out    : float : The convergence ratio of the last iteration of the 
                              selected parameter.
         """
+        if read_file:
+            f = read_file
+        else:
+            f = self.case+".dayfile"
+
         if param not in ['CHARGE', 'ENERGY']:
-	    print("ERROR: param variable not correct in wtools.conv")
-            return None
+	    raise ValueError('wrong choice of "param" variable in output.conviter method')
 
-	if os.path.exists(self.case+".dayfile"):
-		with open(self.case+".dayfile") as df:
-		    ldf = df.readlines()
+	with open(f, "r") as df:
+	    ldf = df.readlines()
 
-                for i in range(len(ldf)-1,-1,-1):
-                    if param in ldf[i]: 
-		        c = ldf[i].split()[-1]
-                        return float(c)
-
-	else:
-		print("ERROR: "+self.case+".dayfile file does not exist")
+        for i in range(len(ldf)-1,-1,-1):
+            if param in ldf[i]: 
+	        return float(ldf[i].split()[-1])
 
 
     # Bug: the figure cuts the yaxis title
-    def convplot(self, param='CHARGE', dots='ro-', show=True, save = True):
+    def convplot(self, param = 'CHARGE', dots = 'ro-', show = True, save = True):
         '''
         This method plot the evolution of the energy with the iteration number
         '''

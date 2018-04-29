@@ -39,7 +39,7 @@ class dmat(object):
         elif b == "full":
             return self.mat
         else:
-            return "Error: Wrong dmat.block parameter "+b
+            raise ValueError('wrong dmat.block value '+b)
 
 
     def eval(self):
@@ -57,7 +57,6 @@ class dmat(object):
             A:B = Trace(A B^{*})
         
         '''
-        
         return np.trace(np.dot(self.matblock(b), np.conj(D)))
 
 
@@ -78,10 +77,8 @@ class dmat(object):
 			         np.real(np.trace(self.matblock("UPUP"))) - np.real(np.trace(self.matblock("DNDN")))])
 
 
-
 def wrap_dmat(uu, dd, ud):
     # This method block build the full density matrix from uu, dd and ud terms 
-
     # uu, dd, ud are np.array matrices which correspond to the UPUP, DNDN and UPDN
     # blocks of the density matrix
 
