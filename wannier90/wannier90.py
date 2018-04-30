@@ -5,7 +5,7 @@ import os
 import sys
 import re
 import numpy as np
-import winput
+import winit
 import wien2k.wtools as wt
 
 """
@@ -15,6 +15,10 @@ Institut fur Festkoerperphysik, TU Wien, Austria
 email : juferafo(at)hotmail.com
 email2: afonso(at)ifp.tuwien.ac.at
 """
+
+# General things to update
+# code method wfsc and wfsciter
+
 
 # SUBSTITUTE THE self.case FOR THE METHOD FROM import wien2k 
 # raise error if wrong format of casew2k!!
@@ -71,9 +75,6 @@ def band_plot(casew2k, spin = 'up', c = '#1f77b4', ene_range = [-10,10], show = 
         plt.show()
     if save:
         plt.savefig('./'+self.case+'_wbands.pdf')
-
-
-
 
 
 class hr(winit.calc):
@@ -178,15 +179,17 @@ class readin(winit.calc):
         This method returns the wannier orbitals projections found in read_file or
         in case.inwf(up/dn)
         '''
-        if self.sp:
-            ext = spin
+        if not self.sp:
+            spin = ''
+        if read_file:
+            fin = read_file
         else:
-            ext = ''
+            fin = self.case+".inwf"+spin
 
-        with open(self.case+".inwf"+ext, "r") as f:
+        with open(fin, "r") as f:
             f = iter(f.readlines()[2:])
         
-        nw = next(f).split()[1]
+        nw = int(next(f).split()[1])
         proj = {}
         count_proj = 1
         for l in f:
@@ -202,19 +205,27 @@ class readin(winit.calc):
 
             count_proj += 1
         
+        if len(proj) != nw:
+            raise ValueError("Value of orbital projections different of number of wannier orbitals")
+
         return proj
 
 
     def num_bw(self, spin = "up", read_file = None):
-        if self.sp:
-            ext = spin
+        if not self.sp:
+            spin = ''
+        if read_file:
+            fin = read_file
         else:
-            ext = ''
+            fin = self.case+".inwf"+spin
 
-        with open(self.case+".inwf"+ext, "r") as f:
+        with open(fin, "r") as f:
             f = f.readlines()
 
-        pass
+        nlda = int(f[1].split()[0]) - int(f[1].split()[1]) + 1
+        nw   = int(f[2].split()[1])
+
+        return nlda, nw
     
 
     def kmesh(self):
@@ -229,6 +240,7 @@ class readin(winit.calc):
         
         return mesh
 
+
     def kgrid(self):
         with open(self.case+".win", "r").readlines() as fin:
             for i in range(len(fin)):
@@ -239,67 +251,82 @@ class readin(winit.calc):
         return kgrid
 
 
-class readout(object):
+class readout(winit.calc):
     '''
     This class contains the input
     '''
+    def __init__(self, wobj):
 
-    def __init__(self, sp = False, spin = '', read_file = None):
-        self.case = os.getcwd().split("/")[-1]
-        self.sp   = sp
-        self.spin = spin
-        self.file = read_file
+        if not isinstance(wobj, winit.calc):
+            raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
 
+        self.case = wobj.case
+        self.sp   = wobj.sp
+        self.c    = wobj.c
+        self.soc  = wobj.soc
+
+
+    # Read wo with proper method
     # Include read_file and read case.woutup
-    def spread(self, spin = "up", orbital = None):
-        '''
-        This method returns the spreads of the wannier orbitals in the last iteration
-        '''
-        """
+    def wfsciter(self, spin = "up", units = "Ang", orbital = None, write_data = False, read_file = None):
+        if read_file:
+            fin = read_file
+        else:
+            f = self.case+".wout"
+            if self.sp and not self.soc:
+                f = f+spin
+   
+        with open(f, "r") as f:
+            f = f.readlines()
+            for i in range(len(f)):
+                if "Initial State" in f[i]:
+                    break
+        
+        wo = readin(self).num_bw()[1]
+        #print(f[i])
+        #print(f[i+jump])
+        for j in range(i,len(f)):
+            if "Initial State" in f[j] or "Cycle" in f[j]:
+                print(f[j])
 
+        
+        return None
+
+    
+    def wfsc(self, spin = "up", orbital = None, read_file = None):
+        """
         orbital : str :
         """
-        
-        if self.file:
-            f = self.file
+        if read_file:
+            fin = read_file
         else:
-            if not self.sp or self.soc:
-                f = self.case+".wout"
-            else:
-                f = self.case+".wout"+self.spin
+            f = self.case+".wout"
+            if self.sp and not self.soc:
+                f = f+spin
 
-        with open(f, "r") as f:
-            f =f.readlines()
-       
+        with open(f, "r") as fin:
+            f = fin.readlines()
+            for i in range(len(f)):
+                if "Final State" in f[i]:
+                    break
+        
+        wo = readin(self).num_bw()[1]
+        c = {}
+        s = {}
+        for l in f[i+1:i+wo+1]:
+            re_woi = re.compile("\s{1,}\d{1,}\s{1,}")
+            re_ci  = re.compile("-\d{1,}\.\d{6}|\d{1,}\.\d{6}")
+            re_si  = re.compile("\d{,}\.\d{8}")
+            
+            woi = int(re_woi.findall(l)[0].split()[0])
+            ci  = [ float(k) for k in re_ci.findall(l)[:3]]
+            si  = float(re_si.findall(l)[0])
+
+            c[woi] = np.asarray(ci, dtype = np.float64)
+            s[woi] = si
+        
         if orbital:
-            pass
+            return c[orbital], s[orbital]
         else:
-            pass
-
-
-    def wout(self):
-        '''
-        This method returns the content of the case.wout(up/dn) file
-        '''
-        with open(self.case+"wout"+self.spin, "r").readlines as wout:
-            wout = [ i.split() for i in wout ] 
-        
-        return wout
-
-
-    def wfi_cs(self, iatom):
-        '''
-        This method returns the spread and center of the wannier function i
-        ''' 
-        wout = wout()
-    
-        for i in wout:
-            if "Final State" in i:
-                break
-
-        #for i in wout[i:num_wann]:
-        pass
-
-
-
+            return c, s
 

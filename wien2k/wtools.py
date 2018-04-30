@@ -205,12 +205,6 @@ class wtools(winit.calc):
                 print("ERROR: "+self.case+"."+ext+" file does not exist")
 
 
-    # Not tested
-    # check the type with proper python function
-    # Implement this search with regular expresion
-    # include read_file option?
-    # raise error is at != TOT or INT
-    # correct bugs
     def mmiter(self, at = 'TOT', write_data = None, read_file = None):
         if read_file:
             fin = read_file
@@ -390,8 +384,8 @@ class wtools(winit.calc):
 	else:
 		return dmts[iatom]
 
-    # implement a read_file option?
-    def label_kband(self):
+
+    def label_kband(self, read_file = None):
         '''
         This method returns the label of the high symmetry points of the case.klist_band
         '''
@@ -400,7 +394,12 @@ class wtools(winit.calc):
         Returns:
             out : dict :
         """
-        with open(self.case+".klist_band", "r") as kb:
+        if read_file:
+            fin = read_file
+        else:
+            fin = self.case+".klist_band"
+
+        with open(fin, "r") as kb:
            kb = [ l.split() for l in kb ]
         
         lk = {}
@@ -413,8 +412,9 @@ class wtools(winit.calc):
 
         return lk
 
-    # Include restriction of in the spin variable
-    def spag_ene(self, spin = 'up'):
+
+    # include count as variable in the for header with zip(a,b)
+    def spag_ene(self, spin = 'up', read_file = None):
         """
         
         Arguments:
@@ -426,7 +426,12 @@ class wtools(winit.calc):
         if not self.sp:
             spin = '' 
         
-        with open(self.case+".spaghetti"+spin+"_ene", "r") as f:
+        if read_file:
+            fin = read_file
+        else:
+            self.case+".spaghetti"+spin+"_ene"
+        
+        with open(fin, "r") as f:
             f = f.readlines()
             
         for i in range(1,len(f)):
@@ -442,6 +447,7 @@ class wtools(winit.calc):
             count += 1
 
         return bands
+
 
     # Change argument c -> color
     def band_plot(self, show = True, save = True, c = '#1f77b4', ene_range = [-10,10]):
@@ -482,6 +488,7 @@ class wtools(winit.calc):
             plt.show()
         if save:
             plt.savefig('./'+self.case+'_bands.pdf')
+
 
     # include list colors of the differet DOS lines?
     def dos_plot(self, ene_range = [-10,10], spin='up', units='eV', show=True, save=True, read_file = None):
@@ -546,50 +553,9 @@ class wtools(winit.calc):
 	    print("Not possible to read input "+f)
 
 
-    def scfmmiat(self, read_file = None):
-
-        if read_file:
-            f = read_file
-        else:
-            pass
-
-        return None
-
-
-
 
 def get_case():
     return None
-
-
-def scfmmiat(case=get_case(), at=1):
-        '''
-        This definition returns the magnetic moment of the atom with <num_atom> in the case.struct
-        '''
-	m = []
-	if os.path.exists(case+".scf"):
-                with open(case+".scf") as scf:
-			lscf = scf.readlines()
-		for l in lscf:
-			if at < 10 and at > 0:
-				search = 'MMI00'+str(at)
-			elif at >= 10 and at < 100:
-				search = 'MMI0'+str(at)
-			elif at >= 100 and at < 1000:
-				search = 'MMI'+str(at)
-			else:
-				print("ERROR: wrong value of atom label in variable 'at'")
-				return None
-			if search in l:
-				mi = l.split()[-1]
-				m.append(mi)
-
-		return np.asarray(m, dtype=np.float64)
-	
-	else:
-	        print("ERROR: "+case+".scf file does not exist")
-	
-
 
 
 def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
