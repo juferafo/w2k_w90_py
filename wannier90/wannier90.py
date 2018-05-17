@@ -268,7 +268,7 @@ class readout(winit.calc):
 
     # Read wo with proper method
     # Include read_file and read case.woutup
-    def wfsciter(self, spin = "up", units = "Ang", orbital = None, write_data = False, read_file = None):
+    def wfsciter(self, spin = "up", orbital = None, write_data = False, read_file = None):
         if read_file:
             fin = read_file
         else:
@@ -283,14 +283,16 @@ class readout(winit.calc):
                     break
         
         wo = readin(self).num_bw()[1]
-        #print(f[i])
-        #print(f[i+jump])
+        c = {}
+        s = {}
         for j in range(i,len(f)):
             if "Initial State" in f[j] or "Cycle" in f[j]:
                 print(f[j])
-
         
-        return None
+        if orbital:
+            pass
+        else:
+            return c, s
 
     
     def wfsc(self, spin = "up", orbital = None, read_file = None):
