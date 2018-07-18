@@ -25,6 +25,88 @@ cd = os.chdir
 # read_log
 # read_day
 
+
+# NEW CLASS NOT TESTED!!!
+# Separate class for the structures!!!
+# This class has to be modified because we will only use the case.struct!!!
+class structure(winit.calc):
+    # include a self.orb attribute?
+    def __init__(self, wobj):
+       
+        if not isinstance(wobj, winit.calc):
+            raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
+
+        self.case = wobj.case
+    
+        try:
+            with open(self.case+".struct", "r") as fstruct:
+                fstruct = fstruct.readlines()
+
+        except:
+            fstruct = None
+
+        self.struct = fstruct
+
+    # Possible update: Read space group
+    def strlat(self, read_file = None):
+        '''
+        This method returns the lattice parameters of the given case.struct file
+        
+        Possible update: Read the spacegroup!
+        '''
+
+        if read_file:
+            with open(fstr, "r") as fstr:
+		lstr = fstr.readlines()
+        else:
+            lstr = self.fstruct
+
+        st = {}
+        lat_sym = lstr[1].split()
+        st['lattice_type'] = lat_sym[0]
+             
+	units = lstr[2].split()[-1].split('=')[1]
+	st['units'] = units 
+              
+        rlat = re.compile(u'\d{,3}\.\d{,8}')
+        lat  = re.findall(rlat,lstr[3])
+        for i, j in zip(['a','b','c','alpha','beta','gamma'], lat):
+            st[i] = float(j)
+            
+        return st
+
+
+    def atpos(self, read_file = None):
+        if read_file:
+            with open(fstr, "r") as fstr:
+                lstr = fstr.readlines()[4:]
+        else:
+            lstr = self.fstruct[4:]
+
+        ap = {}
+        for l in lstr:
+            rat = re.compile(u'^ATOM')
+            if re.match(rat,l):
+                mult = re.findall('\d{1}',lstr[lstr.index(l)+1])[0]
+                mult = int(mult)
+                    
+                nat = re.findall('^(\S\s\d*|\S*)', lstr[lstr.index(l)+1+mult])[0]
+                nat = nat.replace(' ','')
+                    
+                rpos = re.compile(u'\d{1,}\.\d{8}')
+                atpos = re.findall(rpos, l)
+                    
+                ap[nat] = [[ float(j) for j in atpos]]
+
+                for i in range(1,mult):
+                    rpos = re.compile(u'\d{1,}\.\d{8}')
+                    atpos = re.findall(rpos, lstr[lstr.index(l)+1+i])
+                    ap[nat].append([ float(j) for j in atpos ])
+        
+        return ap
+
+
+
 class wien2k(winit.calc):
     """
     This class defines a wien2k calculation object. From it we can obtain information both
