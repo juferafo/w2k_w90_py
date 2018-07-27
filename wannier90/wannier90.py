@@ -124,20 +124,18 @@ class hr(winit.calc):
         This method returns the hopping parameters H(R) at a particular unit cell vector R
         '''
         
-        rel = re.compile("^\s{3}(-|\s)"+str(R[0])+"\s{3}(-|\s)"+str(R[1])+"\s{3}(-|\s)"+str(R[2]))
+        rel = re.compile("^\s{3}(-|\s)"+str(abs(R[0]))+"\s{3}(-|\s)"+str(abs(R[1]))+"\s{3}(-|\s)"+str(abs(R[2])))
         for i in range(len(self.ham)):
             if re.search(rel, self.ham[i]):
                 break
         
         hR = self.ham[i:i+(self.dim**2)]
         hR = [ l.split()[3:] for l in hR ]
-
         hamR = np.zeros((self.dim, self.dim), dtype = np.complex64)
         for r in hR:
             i = int(r[0]) - 1
             j = int(r[1]) - 1
             hamR[i,j] = float(r[2]) + 1j*float(r[3])
-
         return hamR
 
 

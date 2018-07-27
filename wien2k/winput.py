@@ -123,7 +123,7 @@ class wien2k(winit.calc):
         self.sp   = wobj.sp
         self.c    = wobj.c
         self.soc  = wobj.soc
-        self.orb  = wobj.orb
+        #self.orb  = wobj.orb
 
         
     # Posible update: match the old and the new format of the Vxc
