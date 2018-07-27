@@ -35,7 +35,7 @@ class structure(winit.calc):
        
         if not isinstance(wobj, winit.calc):
             raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
-
+        
         self.case = wobj.case
     
         try:
@@ -57,17 +57,17 @@ class structure(winit.calc):
 
         if read_file:
             with open(fstr, "r") as fstr:
-		lstr = fstr.readlines()
+                lstr = fstr.readlines()
         else:
             lstr = self.fstruct
 
         st = {}
         lat_sym = lstr[1].split()
         st['lattice_type'] = lat_sym[0]
-             
-	units = lstr[2].split()[-1].split('=')[1]
-	st['units'] = units 
-              
+
+        units = lstr[2].split()[-1].split('=')[1]
+        st['units'] = units
+
         rlat = re.compile(u'\d{,3}\.\d{,8}')
         lat  = re.findall(rlat,lstr[3])
         for i, j in zip(['a','b','c','alpha','beta','gamma'], lat):
@@ -118,14 +118,14 @@ class wien2k(winit.calc):
        
         if not isinstance(wobj, winit.calc):
             raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
+        super(wien2k, self).__init__(\
+                sp = wobj.sp,\
+                c = wobj.c,\
+                soc = wobj.soc,\
+                orb = wobj.orb,\
+                auto = False)
+   
 
-        self.case = wobj.case
-        self.sp   = wobj.sp
-        self.c    = wobj.c
-        self.soc  = wobj.soc
-        #self.orb  = wobj.orb
-
-        
     # Posible update: match the old and the new format of the Vxc
     def vxc(self, file_read = None):
         """
@@ -203,14 +203,14 @@ class wien2k(winit.calc):
         if os.path.exists(f):
             with open(f, "r") as f:
                 lklist = f.readline().split()
-	
+       
             kpts = int(float(lklist[8]))
             kx = lklist[12]
             ky = lklist[13]
             kz = lklist[14].split(')')[0]
             
             return kpts, np.asarray([kx, ky, kz], dtype = np.int32)
-	
+       
         else:
             raise IOError("No such file: "+f)
 
@@ -230,37 +230,37 @@ class wien2k(winit.calc):
         
         with open(f, "r") as f:
             linorb = f.readlines()
+        
+        if units == 'Ry':
+            u = 1.0
+        elif units == 'eV':
+            u = 13.605698066
+        else:
+            print("Wrong unit variable: unit = "+str(units)+" unknown")
+            print("Setting default Ry units")
+            u = 1.0
 
-	if units == 'Ry':
-	    u = 1.0
-	elif units == 'eV':
-	    u = 13.605698066
-	else:
-	    print("Wrong unit variable: unit = "+str(units)+" unknown")
-	    print("Setting default Ry units")
-	    u = 1.0
-
-	nmod = linorb[0].split()[0]
+        nmod = linorb[0].split()[0]
         if int(float(nmod)) != 1:
-	    raise ValueError("winput.wien2k method uj only valid for LDA+U calculations with nmod = 1 in "+f)
+            raise ValueError("winput.wien2k method uj only valid for LDA+U calculations with nmod = 1 in "+f)
 
-	natorb = int(linorb[0].split()[1])
-		    
-	iat_nl = {}
+        natorb = int(linorb[0].split()[1])
+       	    
+        iat_nl = {}
         for i, c in zip(range(2, 2+natorb), range(1,natorb+1)):
-	    l = linorb[i].split()
-	    iat    = int(l[0])
-	    inlorb = int(l[1])
+            l = linorb[i].split()
+            iat    = int(l[0])
+            inlorb = int(l[1])
             ilorb  = int(l[2])
-	    iat_nl[c] = [iat, inlorb, ilorb]
+            iat_nl[c] = [iat, inlorb, ilorb]
 
-	jstart = 2+natorb+1
-	j = 0
-	UJ = {}
-	n = 1
-	for k in sorted(iat_nl.keys()):
-	    ci = 0
-	    for i in range(jstart+j, len(linorb)):
+        jstart = 2+natorb+1
+        j = 0
+        UJ = {}
+        n = 1
+        for k in sorted(iat_nl.keys()):
+           ci = 0
+           for i in range(jstart+j, len(linorb)):
                 uat = linorb[i].split()[0]
                 jat = linorb[i].split()[1]
                 UJ[n] = [float(uat),float(jat)]
@@ -268,10 +268,10 @@ class wien2k(winit.calc):
                 n += 1
                 if ci == iat_nl[k][1]+1:
                     jstart = 0
-        	    j = i+1
+                    j = i+1
                     break
 
-	return UJ, iat_nl 
+        return UJ, iat_nl 
 
 
     def hkl_soc(self, read_file = None):
@@ -287,7 +287,7 @@ class wien2k(winit.calc):
 
             with open(f, "r") as f:
                 f = f.readlines()
-	
+       
             hkl = f[3].split()[:3]
 
             no_soc = f[len(f)-1].split()
@@ -295,7 +295,7 @@ class wien2k(winit.calc):
                 no_soc = []
             else:
                 no_soc = no_soc[1:1+int(float(no_soc[0]))]
-	    
+           
             return np.asarray(hkl, dtype = np.int32), no_soc 
 
         else:
@@ -321,15 +321,15 @@ class wien2k(winit.calc):
                 fint = fint.readlines()
 
             dos = {}
-	    di = 1
+            di = 1
             for l in fint:
                 if re.search('(".*")', l):
                     dos[di] = re.search('(".*")', l).group(1)
                     dos[di] = dos[di].replace('"', '')
                     di += 1    
-	    
+           
             return dos
-	
+       
         else:
             raise IOError("No such file: "+self.case+".int")
 
@@ -346,16 +346,16 @@ class wien2k(winit.calc):
         else:
             fstr = self.case+".struct"
 
-	if os.path.exists(fstr):
+        if os.path.exists(fstr):
             with open(fstr) as fstr:
-		lstr = fstr.readlines()
-		
+       	        lstr = fstr.readlines()
+       	
             st = {}
             lat_sym = lstr[1].split()
             st['lattice_type'] = lat_sym[0]
              
-	    units = lstr[2].split()[-1].split('=')[1]
-	    st['units'] = units 
+            units = lstr[2].split()[-1].split('=')[1]
+            st['units'] = units 
                
             rlat = re.compile(u'\d{,3}\.\d{,8}')
             lat  = re.findall(rlat,lstr[3])
@@ -374,10 +374,10 @@ class wien2k(winit.calc):
         else:
             fstr = self.case+".struct"
 
-	if os.path.exists(fstr):
+        if os.path.exists(fstr):
             with open(fstr) as fstr:
                 lstr = fstr.readlines()[4:]
-	    
+           
             ap = {}
             for l in lstr:
                 rat = re.compile(u'^ATOM')

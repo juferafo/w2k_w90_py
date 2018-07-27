@@ -27,11 +27,13 @@ class wtools(winit.calc):
         
         if not isinstance(wobj, winit.calc):
             raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
-        
-        self.case = wobj.case
-        self.sp   = wobj.sp
-        self.c    = wobj.c
-        self.soc  = wobj.soc
+        super(wien2k, self).__init__(\
+                sp = wobj.sp,\
+                c = wobj.c,\
+                soc = wobj.soc,\
+                orb = wobj.orb,\
+                auto = False)
+
 
 
     # NOT TESTED!
@@ -49,13 +51,13 @@ class wtools(winit.calc):
         Returns:
             out       : float : Energy of the last iteration
         """
-	if units == 'Ry':
-	    u = 1.0
-	elif units == 'eV':
-	    u = 13.605698066
-	else:
-	    print("Wrong unit variable: unit = "+str(units)+" unknown")
-	    print("Setting default energy units to Ry")
+        if units == 'Ry':
+            u = 1.0
+        elif units == 'eV':
+            u = 13.605698066
+        else:
+            print("Wrong unit variable: unit = "+str(units)+" unknown")
+            print("Setting default energy units to Ry")
             u = 1.0
 
         if read_file:
@@ -63,14 +65,14 @@ class wtools(winit.calc):
         else:
             f = self.case+".scf"
 
-	if os.path.exists(f):
-	    with open(f, "r") as scf:
-		lscf = scf.readlines()
-	    for i in range(len(lscf)-1,-1,-1):
-		if ":ENE" in lscf[i]: 
-	            ene = lscf[i].split()[-1]
-		    break
-	    return float(ene)*u
+        if os.path.exists(f):
+            with open(f, "r") as scf:
+       	        lscf = scf.readlines()
+            for i in range(len(lscf)-1,-1,-1):
+       	        if ":ENE" in lscf[i]: 
+                    ene = lscf[i].split()[-1]
+       	        break
+            return float(ene)*u
 
         else:
             raise IOError("No such file: "+f)
@@ -79,7 +81,7 @@ class wtools(winit.calc):
     # NOT TESTED!
     # finish! energy.dat file
     def eneiter(self, units = 'Ry', write_data = False, read_file = None):
-	"""
+        """
         This definition returns the evolution of the energy vwith the iteration number 
         found in the ./case.scf file
         
@@ -93,28 +95,28 @@ class wtools(winit.calc):
                                      written in the case.scf file in the selected units
         """
         if units == 'Ry':
-		u = 1.0
-	elif units == 'eV':
-		u = 13.605698066
-	else:
-		print("Wrong unit variable: unit = "+str(units)+" unknown")
-		print("Setting default energy units to Ry")
-	        u = 1.0
+            u = 1.0
+        elif units == 'eV':
+       	    u = 13.605698066
+        else:
+       	    print("Wrong unit variable: unit = "+str(units)+" unknown")
+       	    print("Setting default energy units to Ry")
+            u = 1.0
 
         if read_file:
             f = read_file
         else:
             f = self.case+".scf"
-	
+       
         if os.path.exists(f):
-	    eneiter = []
-	    with open(f) as scf:
-		lscf = scf.readlines()
-	    for l in lscf:
-		if ":ENE" in l: 
-	            ei = float(l.split()[-1])
-		    eneiter.append(ei)
-	    eneiter = np.asarray(eneiter, dtype=np.float64)*u
+            eneiter = []
+            with open(f) as scf:
+                lscf = scf.readlines()
+            for l in lscf:
+       	        if ":ENE" in l: 
+                    ei = float(l.split()[-1])
+       	            eneiter.append(ei)
+            eneiter = np.asarray(eneiter, dtype=np.float64)*u
             
             # NOT TESTED!
             if write_data:
@@ -193,16 +195,17 @@ class wtools(winit.calc):
             if self.sp and spin:
                 f = f+spin
 
-	if os.path.exists(f):
-		with open(f, "r") as scf2:
-		    lscf2 = scf2.readlines()
-		for l in lscf2:
-		    if ":FER" in l:
-		        fer = l.split()[-1]
-			break
-		return float(fer)
-	else:
-                print("ERROR: "+self.case+"."+ext+" file does not exist")
+        if os.path.exists(f):
+       	    with open(f, "r") as scf2:
+       	        lscf2 = scf2.readlines()
+       	    for l in lscf2:
+       	        if ":FER" in l:
+       	            fer = l.split()[-1]
+                    break
+
+            return float(fer)
+        else:
+            print("ERROR: "+self.case+"."+ext+" file does not exist")
 
 
     def mmiter(self, at = 'TOT', write_data = None, read_file = None):
@@ -212,20 +215,20 @@ class wtools(winit.calc):
             fin = self.case+".scf"
 
         with open(fin, "r") as f:
-	    f = f.readlines()
+           f = f.readlines()
 
         if isinstance(at, str) or isinstance(at, unicode):
             if at not in ['TOT', 'INT']:
                 raise ValueError('wrong choice of "at" variable in wtools.mm')
             re_mm = re.compile('^:MM'+at+':')
-	else:
+        else:
             re_mm = re.compile('^:MM(I|TOT)(0)*'+str(at))
     
         mmiter = []
         for i in range(len(f)):
-	    if re_mm.search(f[i]):
-	        mi = float(f[i].split()[-1])
-                mmiter.append(mi)
+           if re_mm.search(f[i]):
+               mi = float(f[i].split()[-1])
+               mmiter.append(mi)
         mmiter = np.asarray(mmiter, dtype=np.float64)
 
         if write_data:
@@ -249,81 +252,68 @@ class wtools(winit.calc):
             f = self.case+".scfm"
 
         with open(f, "r") as f:
-	    f = f.readlines()
+           f = f.readlines()
         
         if isinstance(at, str) or isinstance(at, unicode):
             if at not in ['TOT', 'INT']:
                 raise ValueError('wrong choice of "at" variable in wtools.mm')
             re_mm = re.compile('^:MM'+at+':')
-	else:
+        else:
             re_mm = re.compile('^:MM(I|TOT)(0)*'+str(at))
 
         for i in range(len(f)-1,-1,-1):
-	    if re_mm.search(f[i]):
-	        mi = float(f[i].split()[-1])
-		return mi
+            if re_mm.search(f[i]):
+                mi = float(f[i].split()[-1])
+       	return mi
 
 
     def dmat(self, spin = "up", atom=''):
-	'''
-	This definition returns a dictionary with the density matrices of case.dmat/up/dn/ud
-	'''
-        """
-        
-        Arguments:
-            spin : str : 
-            atom : str :
-
-        Returns:
-            out : dict : 
-        """
         if not self.sp:
             spin = '' 
 
-	if os.path.exists(self.case+".dmat"+spin):
-		
+        if os.path.exists(self.case+".dmat"+spin):
             with open(self.case+".dmat"+spin) as dm:
-		ldm = dm.readlines()
-		
-	    dmts = {}
+       	        ldm = dm.readlines()
+       	
+            dmts = {}
             for i in range(len(ldm)):
-    		if 'L, Lx,Ly,Lz in global orthogonal system' in ldm[i]:
-	            ati = int(float(ldm[i-1].split()[0]))
-		    li = int(float(ldm[i].split()[0]))
-		    fl = (2*li+1)//2
-		    ul = (2*li+1)%2
-		    dmi = ldm[i+1:i+1+(fl+ul)*(2*li+1)]
-		    dmi_re = []
-		    dmi_im = []
-		    for l in dmi:
-			l = l.split()
-			for j in range(len(l)):
-		            if j%2 == 0:
-				dmi_re.append(l[j])
-			    else:
-				dmi_im.append(l[j])
-		
+                if 'L, Lx,Ly,Lz in global orthogonal system' in ldm[i]:
+                    ati = int(float(ldm[i-1].split()[0]))
+       	    li = int(float(ldm[i].split()[0]))
+       	    fl = (2*li+1)//2
+       	    ul = (2*li+1)%2
+       	    dmi = ldm[i+1:i+1+(fl+ul)*(2*li+1)]
+       	    dmi_re = []
+       	    dmi_im = []
+       	    for l in dmi:
+                l = l.split()
+                for j in range(len(l)):
+       	            if j%2 == 0:
+                        dmi_re.append(l[j])
+                    else:
+                        dmi_im.append(l[j])
+       	
                     dmi_re = np.asarray(dmi_re, dtype = np.float64)
-		    dmi_im = np.asarray(dmi_im, dtype = np.float64)
-		    dmi_re = dmi_re.reshape((2*li+1, 2*li+1)).round(3)
-		    dmi_im = dmi_im.reshape((2*li+1, 2*li+1)).round(3)
-		    dmts[ati] = dmi_re + 1j*dmi_im
-	    if atom == '':
-		return dmts
-	    else:
-		return dmts[atom]
+       	    dmi_im = np.asarray(dmi_im, dtype = np.float64)
+       	    dmi_re = dmi_re.reshape((2*li+1, 2*li+1)).round(3)
+       	    dmi_im = dmi_im.reshape((2*li+1, 2*li+1)).round(3)
+       	    dmts[ati] = dmi_re + 1j*dmi_im
+            if atom == '':
+       	        return dmts
+            else:
+       	        return dmts[atom]
 
-	else:
-	    print("ERROR: "+self.case+".dmat"+spin+" file does not exist")
-	    return None
+        else:
+           print("ERROR: "+self.case+".dmat"+spin+" file does not exist")
+           return None
 
 
     # This method was not intensively tested!!!!!
     def scfdmat(self, file_spin='up', dmat_spin = 'all', iatom = '', file_read = None):
-	# This definition only is tested for cases with SOC for rotated and non rotated systems!
-	# This is for: case.scfdmup and case.scfdmrotup
-	# from winput import natdm
-	# implement the natdm method! until this this variable will not be used!!!!
+       # This definition only is tested for cases with SOC for rotated and non rotated systems!
+       # This is for: case.scfdmup and case.scfdmrotup
+       # from winput import natdm
+       # implement the natdm method! until this this variable will not be used!!!!
         """
         
         Arguments:
@@ -342,31 +332,31 @@ class wtools(winit.calc):
         else:
             if self.soc:
                 # If the calculation is done with spin-orbit coupling everything is written into case.scfdmup
-	        if os.path.exists(self.case+'.scfdmrotup'):
-		    # Careful! The structure of case.scfdmrotup is different than the one without rotation
-		    scfile = self.case+'.scfdmrotup'
-	        else:
- 		    scfile = self.case+'.scfdmup'
-	    else:
-	            scfile = self.case+'.scfdm'+file_spin
+                if os.path.exists(self.case+'.scfdmrotup'):
+       	        # Careful! The structure of case.scfdmrotup is different than the one without rotation
+       	            scfile = self.case+'.scfdmrotup'
+                else:
+                    scfile = self.case+'.scfdmup'
+            else:
+                scfile = self.case+'.scfdm'+file_spin
 
         if not os.path.exists(scfile):
-		print("ERROR: "+scfile+" struct file does not exist")
-		return None
+       	    print("ERROR: "+scfile+" struct file does not exist")
+       	    return None
 
-	with open(scfile) as scfdm:
-		lscfdm = scfdm.readlines()
-	
-	dmts = {}
+        with open(scfile) as scfdm:
+       	    lscfdm = scfdm.readlines()
+       
+        dmts = {}
         rdm = re.compile('(Density matrix )(UPUP|DNDN|UPDN)')
-	
-	for i in range(len(lscfdm)):
+       
+        for i in range(len(lscfdm)):
             if re.search(rdm, lscfdm[i]):
                 #if ' Density matrix '+spin+' block,' in lscfdm[i]:
-    		L = int(lscfdm[i].split()[-1])
+                L = int(lscfdm[i].split()[-1])
                 ati = int(lscfdm[i+2*(2*L+1)+1+2].split()[0][4:-1])
                 block = lscfdm[i].split()[2]
-    		dmi_re = np.loadtxt(lscfdm[i+1:i+1+2*L+1])
+                dmi_re = np.loadtxt(lscfdm[i+1:i+1+2*L+1])
                 dmi_im = np.loadtxt(lscfdm[i+1+1+2*L+1:i+1+2*L+1+1+2*L+1])
                 dmi    = dmi_re + 1j*dmi_im
                 
@@ -378,11 +368,11 @@ class wtools(winit.calc):
                     dmi_dd = dmi_re + 1j*dmi_im
                     dmi    = wdm.wrap_dmat(dmi_uu, dmi_dd, dmi_ud) 
                     dmts[ati] = wdm.dmat(dmi)
-    		
-	if iatom == '':
-		return dmts
-	else:
-		return dmts[iatom]
+           	
+        if iatom == '':
+       	    return dmts
+        else:
+       	    return dmts[iatom]
 
 
     def label_kband(self, read_file = None):
@@ -508,7 +498,7 @@ class wtools(winit.calc):
         Returns:
             out : NoneType : 
         """
-	import matplotlib.pyplot as plt
+        import matplotlib.pyplot as plt
         
         if read_file:
             f = read_file
@@ -538,11 +528,11 @@ class wtools(winit.calc):
             for i in range(1,len(dos[0])):
                 plt.plot(dos[:,0], dos[:,i], label=dos_labels[i])
            
-	    plt.title('Density of States '+self.case)
+            plt.title('Density of States '+self.case)
             plt.ylabel('DOS (1/'+units+')')
             plt.xlabel('Energy ('+units+')')
             plt.xlim(ene_range)
-	    plt.legend(loc = 0)
+            plt.legend(loc = 0)
             
             if show:
                 plt.show() 
@@ -550,7 +540,7 @@ class wtools(winit.calc):
                 plt.savefig('./'+self.case+'_DOS.pdf')
 
         else:
-	    print("Not possible to read input "+f)
+            print("Not possible to read input "+f)
 
 
 
@@ -559,43 +549,42 @@ def get_case():
 
 
 def scfdm_sat(case=get_case(), fspin='up', spin='UPUP', iatom = '', soc=False):
-	# This definition only is tested for cases with SOC for rotated and non rotated systems!
-	# This is for: case.scfdmup and case.scfdmrotup
-	from winput import natdm
-	if soc:
-		if os.path.exists(case+'.scfdmrotup'):
-			# Careful! The structure of case.scfdmrotup is different than the one without rotation
-			scfile = case+'.scfdmrotup'
-		else:
-			scfile = case+'.scfdmup'
-	else:
-		scfile = case+'.scfdm'+fspin
-	if not os.path.exists(scfile):
-		print("ERROR: "+scfile+" struct file does not exist")
-		return None
-	if spin != 'UPUP' and spin!= 'DNDN'and spin!= 'UPDN':
-		print("ERROR: wrong spin sector selected")
-		return None
+       # This definition only is tested for cases with SOC for rotated and non rotated systems!
+       # This is for: case.scfdmup and case.scfdmrotup
+        from winput import natdm
+        if soc:
+       	    if os.path.exists(case+'.scfdmrotup'):
+                scfile = case+'.scfdmrotup'
+       	    else:
+                scfile = case+'.scfdmup'
+        else:
+       	    scfile = case+'.scfdm'+fspin
+        if not os.path.exists(scfile):
+       	    print("ERROR: "+scfile+" struct file does not exist")
+       	    return None
+        if spin != 'UPUP' and spin!= 'DNDN'and spin!= 'UPDN':
+       	    print("ERROR: wrong spin sector selected")
+       	    return None
 
-	nat = natdm(case)
-	with open(scfile) as scfdm:
-		lscfdm = scfdm.readlines()
-	
-	dmts = {}
-	if scfile == case+'.scfdmrotup':
-		for i in range(len(lscfdm)):
-			if ' Density matrix '+spin+' block,' in lscfdm[i]:
-				L = int(float(lscfdm[i].split()[-1]))
-				ati = int(float(lscfdm[i+2*(2*L+1)+1+2].split()[0][4:-1]))
-				dmi_re = np.loadtxt(lscfdm[i+1:i+1+2*L+1])
-				dmi_im = np.loadtxt(lscfdm[i+1+1+2*L+1:i+1+2*L+1+1+2*L+1])
-				dmts[ati] = dmi_re + 1j*dmi_im
-			
-	if len(dmts) != nat:
-		print("Error: number of atoms inconsistent with "+case+".indm(c) input")
-		return None
+        nat = natdm(case)
+        with open(scfile) as scfdm:
+       	    lscfdm = scfdm.readlines()
+       
+        dmts = {}
+        if scfile == case+'.scfdmrotup':
+       	    for i in range(len(lscfdm)):
+                if ' Density matrix '+spin+' block,' in lscfdm[i]:
+                    L = int(float(lscfdm[i].split()[-1]))
+                    ati = int(float(lscfdm[i+2*(2*L+1)+1+2].split()[0][4:-1]))
+                    dmi_re = np.loadtxt(lscfdm[i+1:i+1+2*L+1])
+                    dmi_im = np.loadtxt(lscfdm[i+1+1+2*L+1:i+1+2*L+1+1+2*L+1])
+                    dmts[ati] = dmi_re + 1j*dmi_im
+       		
+        if len(dmts) != nat:
+       	    print("Error: number of atoms inconsistent with "+case+".indm(c) input")
+       	    return None
 
-	if iatom == '':
-		return dmts
-	else:
-		return dmts[iatom]
+        if iatom == '':
+       	    return dmts
+        else:
+       	    return dmts[iatom]

@@ -61,20 +61,20 @@ class dmat(object):
 
 
     def mag(self ,axis=None):
-	'''
-	This definition returns the magnetic moment calculated from the density matrix D
-	'''
-	
-	if axis == 'x':
-		return 2*np.real(np.trace(self.matblock("UPDN")))
-	if axis == 'y':
-		return 2*np.imag(np.trace(self.matblock("UPDN")))
-	if axis == 'z':
-		return np.trace(self.matblock("UPUP")) - np.trace(self.matblock("DNDN"))
-	if axis == None:
-		return np.array([2*np.real(np.trace(self.matblock("UPDN"))),\
-			         2*np.imag(np.trace(self.matblock("UPDN"))),\
-			         np.real(np.trace(self.matblock("UPUP"))) - np.real(np.trace(self.matblock("DNDN")))])
+       '''
+       This definition returns the magnetic moment calculated from the density matrix D
+       '''
+       
+       if axis == 'x':
+       	return 2*np.real(np.trace(self.matblock("UPDN")))
+       if axis == 'y':
+       	return 2*np.imag(np.trace(self.matblock("UPDN")))
+       if axis == 'z':
+       	return np.trace(self.matblock("UPUP")) - np.trace(self.matblock("DNDN"))
+       if axis == None:
+       	return np.array([2*np.real(np.trace(self.matblock("UPDN"))),\
+       		         2*np.imag(np.trace(self.matblock("UPDN"))),\
+       		         np.real(np.trace(self.matblock("UPUP"))) - np.real(np.trace(self.matblock("DNDN")))])
 
 
 def wrap_dmat(uu, dd, ud):

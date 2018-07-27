@@ -46,16 +46,18 @@ class calc(object):
         self.case = os.getcwd().split("/")[-1]
 
         if auto:
-            if os.path.exists(self.case+".enegryup") or os.path.exists(self.case+".enegrydn"):
+            if os.path.exists(self.case+".energyup") or os.path.exists(self.case+".energydn"):
+                print("found sp")
                 self.sp = True
             if os.path.exists(self.case+".in1c") or os.path.exists(self.case+".in2c"):
-                self.c = True 
-            if os.path.exists(self.case+".energysoup") or os.path.exists(self.case+".energysodn"):
+                self.c = True
+            if os.path.exists(self.case+".energysoup") or os.path.exists(self.case+".energysodn") or \
+               os.path.exists(self.case+".energyso"):
                 self.soc = True
             if os.path.exists(self.case+".vorbup") or os.path.exists(self.case+".vorbdn"):
                 self.orb = True
     
-            [setattr(self, i, False) for i in ['c', 'sp', 'soc'] if not hasattr(self, i)] 
+            [setattr(self, i, False) for i in ['c', 'sp', 'soc', 'orb'] if not hasattr(self, i)] 
 
         else:
             self.sp  = sp

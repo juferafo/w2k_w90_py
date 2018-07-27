@@ -88,11 +88,13 @@ class hr(winit.calc):
         
         if not isinstance(wobj, winit.calc):
             raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
-
-        self.case = wobj.case
-        self.sp   = wobj.sp
-        self.c    = wobj.c
-        self.soc  = wobj.soc
+        super(hr, self).__init__(\
+                sp = wobj.sp,\
+                c = wobj.c,\
+                soc = wobj.soc,\
+                orb = wobj.orb,\
+                auto = False)
+        
         self.spin = spin
         self.file = read_file
         
