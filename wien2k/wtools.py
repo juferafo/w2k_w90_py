@@ -27,7 +27,7 @@ class wtools(winit.calc):
         
         if not isinstance(wobj, winit.calc):
             raise TypeError("Wrong type for wobj object. Expected winit.calc type.")
-        super(wien2k, self).__init__(\
+        super(wtools, self).__init__(\
                 sp = wobj.sp,\
                 c = wobj.c,\
                 soc = wobj.soc,\
@@ -266,38 +266,51 @@ class wtools(winit.calc):
                 mi = float(f[i].split()[-1])
        	return mi
 
-
+    # TESTED AND WORKING!
     def dmat(self, spin = "up", atom=''):
         if not self.sp:
             spin = '' 
+        
+        if atom == '':
+            re_at = re.compile(str(atom)+'\s(atom)\s(density)\s(matrix)')
+        else:
+            re_at = re.compile('\s(atom)\s(density)\s(matrix)')
+
 
         if os.path.exists(self.case+".dmat"+spin):
             with open(self.case+".dmat"+spin) as dm:
        	        ldm = dm.readlines()
        	
-            dmts = {}
+            ldmts = {}
+            l = {}
             for i in range(len(ldm)):
-                if 'L, Lx,Ly,Lz in global orthogonal system' in ldm[i]:
-                    ati = int(float(ldm[i-1].split()[0]))
-       	    li = int(float(ldm[i].split()[0]))
-       	    fl = (2*li+1)//2
-       	    ul = (2*li+1)%2
-       	    dmi = ldm[i+1:i+1+(fl+ul)*(2*li+1)]
-       	    dmi_re = []
-       	    dmi_im = []
-       	    for l in dmi:
-                l = l.split()
-                for j in range(len(l)):
-       	            if j%2 == 0:
-                        dmi_re.append(l[j])
-                    else:
-                        dmi_im.append(l[j])
-       	
-                    dmi_re = np.asarray(dmi_re, dtype = np.float64)
-       	    dmi_im = np.asarray(dmi_im, dtype = np.float64)
-       	    dmi_re = dmi_re.reshape((2*li+1, 2*li+1)).round(3)
-       	    dmi_im = dmi_im.reshape((2*li+1, 2*li+1)).round(3)
-       	    dmts[ati] = dmi_re + 1j*dmi_im
+                if re_at.search(ldm[i]):
+                    print(ldm[i])
+                    ati = int(float(ldm[i].split()[0]))
+                    li = int(float(ldm[i+1].split()[0]))       
+       	            fl = (2*li+1)//2
+       	            ul = (2*li+1)%2
+                    l[ati] = li
+                    ldmts[ati] = ldm[i+2:i+2+(fl+ul)*(2*li+1)]
+                    if atom:
+       	                break
+            dmts = {}
+            for k in ldmts.keys():
+       	        dmi_re = []
+       	        dmi_im = []
+       	        for l in ldmts[k]:
+                    l = l.split()
+                    for j in range(len(l)):
+       	                if j%2 == 0:
+                            dmi_re.append(l[j])
+                        else:
+                            dmi_im.append(l[j])
+                dmi_re = np.asarray(dmi_re, dtype = np.float64)
+       	        dmi_im = np.asarray(dmi_im, dtype = np.float64)
+       	        dmi_re = dmi_re.reshape((2*li+1, 2*li+1)).round(3)
+       	        dmi_im = dmi_im.reshape((2*li+1, 2*li+1)).round(3)
+       	        dmts[k] = dmi_re + 1j*dmi_im
+            
             if atom == '':
        	        return dmts
             else:
@@ -306,7 +319,6 @@ class wtools(winit.calc):
         else:
            print("ERROR: "+self.case+".dmat"+spin+" file does not exist")
            return None
-
 
     # This method was not intensively tested!!!!!
     def scfdmat(self, file_spin='up', dmat_spin = 'all', iatom = '', file_read = None):

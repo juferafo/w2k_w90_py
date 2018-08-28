@@ -22,7 +22,7 @@ class calc(object):
 
     # Test the auto mode
     # link this constructor with the wannier90 and wien2k classes
-    def __init__(self, sp = False, c = False, soc = False, orb = False, auto = True):
+    def __init__(self, sp = False, c = False, soc = False, orb = False, orbud = False, auto = True):
         """
         Input:
             sp   : bool : True/False wether the calculation includes or not spin-polarization.
@@ -56,11 +56,14 @@ class calc(object):
                 self.soc = True
             if os.path.exists(self.case+".vorbup") or os.path.exists(self.case+".vorbdn"):
                 self.orb = True
+            if os.path.exists(self.case+".vorbud"):
+                self.orbud = True
     
-            [setattr(self, i, False) for i in ['c', 'sp', 'soc', 'orb'] if not hasattr(self, i)] 
+            [setattr(self, i, False) for i in ['c', 'sp', 'soc', 'orb', 'orbud'] if not hasattr(self, i)] 
 
         else:
-            self.sp  = sp
-            self.c   = c
-            self.soc = soc
-            self.orb = orb
+            self.sp    = sp
+            self.c     = c
+            self.soc   = soc
+            self.orb   = orb
+            self.orbud = orbud
