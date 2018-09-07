@@ -285,7 +285,6 @@ class wtools(winit.calc):
             l = {}
             for i in range(len(ldm)):
                 if re_at.search(ldm[i]):
-                    print(ldm[i])
                     ati = int(float(ldm[i].split()[0]))
                     li = int(float(ldm[i+1].split()[0]))       
        	            fl = (2*li+1)//2

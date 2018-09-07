@@ -47,4 +47,6 @@ def expe_O(D, O):
 	else:
 		return np.trace(np.dot(dagger(O),D))
 
+def proj(O, a_proj):
 
+    return np.trace(np.dot(O,np.conj(a_proj)))

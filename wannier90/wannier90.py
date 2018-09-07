@@ -140,7 +140,11 @@ class hr(winit.calc):
             hamR[i,j] = float(r[2]) + 1j*float(r[3])
         return hamR
 
-
+    def write_ham(self, hamiltonian, f = "hamiltonian.dat", basis = ''):
+        '''
+        This method writes the provided hamiltonian into a file 
+        '''
+        return None
 
 # What about the spin and or read_file?
 class readin(winit.calc):

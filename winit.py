@@ -47,7 +47,6 @@ class calc(object):
 
         if auto:
             if os.path.exists(self.case+".energyup") or os.path.exists(self.case+".energydn"):
-                print("found sp")
                 self.sp = True
             if os.path.exists(self.case+".in1c") or os.path.exists(self.case+".in2c"):
                 self.c = True
