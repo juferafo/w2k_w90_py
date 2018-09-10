@@ -60,7 +60,7 @@ class dmat(object):
         return np.trace(np.dot(self.matblock(b), np.conj(D)))
 
 
-    def mag(self ,axis=None):
+    def mag(self, axis=None):
        '''
        This definition returns the magnetic moment calculated from the density matrix D
        '''
@@ -77,10 +77,16 @@ class dmat(object):
        		         np.real(np.trace(self.matblock("UPUP"))) - np.real(np.trace(self.matblock("DNDN")))])
 
 
-def wrap_dmat(uu, dd, ud):
+def wrap_dmat(uu, dd, ud, transform_class = False):
     # This method block build the full density matrix from uu, dd and ud terms 
     # uu, dd, ud are np.array matrices which correspond to the UPUP, DNDN and UPDN
     # blocks of the density matrix
+    if transform_class:
+        # If transform class == True it outputs the matrix as a dmat class as defined above
+        density_matrix = np.bmat([[uu, ud], [dagger(ud), dd]])
+        density_matrix = dmat(density_matrix)
 
-    return np.bmat([[uu, ud], [dagger(ud), dd]]) 
+    else:
+        density_matrix = np.bmat([[uu, ud], [dagger(ud), dd]]) 
 
+    return density_matrix

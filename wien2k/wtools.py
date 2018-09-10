@@ -272,9 +272,9 @@ class wtools(winit.calc):
             spin = '' 
         
         if atom == '':
-            re_at = re.compile(str(atom)+'\s(atom)\s(density)\s(matrix)')
-        else:
             re_at = re.compile('\s(atom)\s(density)\s(matrix)')
+        else:
+            re_at = re.compile(str(atom)+'\s(atom)\s(density)\s(matrix)')
 
 
         if os.path.exists(self.case+".dmat"+spin):

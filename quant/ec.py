@@ -3,11 +3,11 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import numpy as np
 import quant.mathop as mathop
-import qm.pauli as pauli
+import quant.qm as qm
 
 sr = np.sqrt
 
-# untested!
+# TESTED!
 def ecorb(orb = 'xy', value = 'real'):
         '''
         This definition returns the orbital matrix for the t1g excitons! 
@@ -61,7 +61,7 @@ def ecorb(orb = 'xy', value = 'real'):
         t1g_r = {'xy': xy_r, 'yz': yz_r, 'xz': xz_r} 
         t1g_i = {'xy': xy_i, 'yz': yz_i, 'xz': xz_i} 
 
-        if orb = 'all':
+        if orb == 'all':
             return t1g_r, t1g_i
 
         if value == 'real':
@@ -73,10 +73,10 @@ def ecorb(orb = 'xy', value = 'real'):
         else:
             return None
 
-# untested!
-def dmec(orb = 'xy', value = 'real', spin = 'z'):
+# TESTED!
+def make_ec(orb = 'xy', value = 'real', spin = 'z'):
 
-    gamma = ecorb(orb, value)
-    pauli = pauli(spin) 
+    gamma       = ecorb(orb, value)
+    spin_sector = qm.pauli(spin) 
 
-    return np.kron(pauli, gamma)
+    return np.kron(spin_sector, gamma)
