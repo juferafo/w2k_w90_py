@@ -46,6 +46,8 @@ class calc(object):
         self.case = os.getcwd().split("/")[-1]
 
         if auto:
+            print("Automatic mode selected.")
+            print("spin-polarization, spin-orbit coupling, complex calculation and orbital U will be set up automatically")
             if os.path.exists(self.case+".energyup") or os.path.exists(self.case+".energydn"):
                 self.sp = True
             if os.path.exists(self.case+".in1c") or os.path.exists(self.case+".in2c"):
