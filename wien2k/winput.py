@@ -107,7 +107,8 @@ class structure(winit.calc):
 
 
 
-class DFTrun(winit.calc):
+#class DFTrun(winit.calc):
+class wien2k(winit.calc):
     """
     This class defines a wien2k calculation object. From it we can obtain information both
     for the imput and output results.

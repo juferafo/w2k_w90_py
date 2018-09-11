@@ -69,14 +69,32 @@ def ecorb(orb = 'xy', value = 'real'):
 
         elif value == 'imag':
             return t1g_i[orb]
+        
+        elif value == 'all':
+            return t1g_r[orb] + 1j*t1g_i[orb]
 
         else:
             return None
 
 # TESTED!
-def make_ec(orb = 'xy', value = 'real', spin = 'z'):
+def ec_matrix(orb = 'xy', value = 'real', spin = 'z'):
 
-    gamma       = ecorb(orb, value)
-    spin_sector = qm.pauli(spin) 
+    ganma       = ecorb(orb, value)
+    spin_dir    = qm.pauli(spin) 
 
-    return np.kron(spin_sector, gamma)
+    return np.kron(spin_dir, ganma)
+
+def ec_order_parameter(dmat):
+    order_parameter = np.zeros((3,3), dtype = np.complex64)
+
+    orbitals = ['xy', 'yz', 'xz']
+    spin_dir = ['x', 'y', 'z']
+
+    for oi in range(len(orbitals)):
+        for si in range(len(spin_dir)):
+            ganma = ec_matrix(orb = orbitals[oi],\
+                    spin = spin_dir[si],\
+                    value = 'all')
+            order_parameter[oi, si] = dmat.proj(ganma) 
+
+    return order_parameter

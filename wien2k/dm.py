@@ -20,8 +20,14 @@ class dmat(object):
     def __init__(self, mat, block = "full"):
         self.mat   = mat
         self.block = block
-
-
+        
+        if block == "full":
+            l = int((len(self.mat)/2 - 1 )/2)
+        else:
+            l = int((len(self.mat) - 1 )/2)
+        
+        self.l = l
+        
     def change_block(self, b):
         self.block = b
 
@@ -49,7 +55,7 @@ class dmat(object):
         return np.linalg.eig(self.mat)[1] 
 
 
-    def proj(self, D, b = "full"):
+    def proj(self, matrix_proj, b = "full"):
         '''
         This method returns the projection of the density matrix self.matblock(b)
         over the matrix D calculated as the Frobenious inner product:
@@ -57,7 +63,7 @@ class dmat(object):
             A:B = Trace(A B^{*})
         
         '''
-        return np.trace(np.dot(self.matblock(b), np.conj(D)))
+        return np.trace(np.dot(self.matblock(b), np.conj(matrix_proj)))
 
 
     def mag(self, axis=None):
@@ -76,6 +82,30 @@ class dmat(object):
        		         2*np.imag(np.trace(self.matblock("UPDN"))),\
        		         np.real(np.trace(self.matblock("UPUP"))) - np.real(np.trace(self.matblock("DNDN")))])
 
+    # Needs an upgrade!!!
+    # Still in an early version!
+    def write(self, atom = '', name = "density_matrix_atom_"):
+        '''
+        This method writes the density matrix as case.dmat* wien2k format
+        '''
+        if self.block != 'full':
+            return None
+        
+        spin_sectors = ['UPUP', 'DNDN', 'UPDN']
+
+        for spin in spin_sectors:
+            fname = name+str(atom)+".dmat_"+spin
+            dm = self.matblock(spin)
+            with open(fname, "w") as fw:
+                for i in range(len(dm)):
+                    for j in range(len(dm)):
+                        fw.write(' % 1.12E' % dm[i,j].real + ' % 1.12E' % dm[i,j].imag)
+                        if j%2 == 1:
+                            fw.write("\n")
+                        else:
+                            fw.write('  ')
+                    fw.write("\n")
+
 
 def wrap_dmat(uu, dd, ud, transform_class = False):
     # This method block build the full density matrix from uu, dd and ud terms 
@@ -90,3 +120,7 @@ def wrap_dmat(uu, dd, ud, transform_class = False):
         density_matrix = np.bmat([[uu, ud], [dagger(ud), dd]]) 
 
     return density_matrix
+
+
+def replace_dmat():
+    return None

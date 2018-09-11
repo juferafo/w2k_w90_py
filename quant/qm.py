@@ -280,6 +280,24 @@ def dmc_sb(orbital):
         else:
             return None
 
+# TESTED AND WORKING!
+def build_dmc_sb(block_upup = {'z2' : 0, 'x2y2' : 0, 'xy' : 0, 'xz' : 0, 'yz' : 0},\
+                 block_dndn = {'z2' : 0, 'x2y2' : 0, 'xy' : 0, 'xz' : 0, 'yz' : 0},\
+                 block_updn = {'z2' : 0, 'x2y2' : 0, 'xy' : 0, 'xz' : 0, 'yz' : 0}):
+    '''
+    This definition builds a density matrix as a linear combination of cubic harmonic occupations
+    expresed in the spherical harmonic basis. The output is a density matrix with spin structure.
+    '''
+    dmat = np.zeros((10,10), dtype = np.complex64)
+    dmat_blocks  = [block_upup, block_dndn, block_updn]
+    spin_sectors = [np.array([[1,0],[0,0]]), np.array([[0,0],[0,1]]), np.array([[0,1],[0,0]])]
+    for b, s in zip(dmat_blocks, spin_sectors):
+        for k in b.keys():
+            dmat += b[k]*np.kron(s, dmc_sb(k))
+    
+    dmat[5:,:5] = np.conj(dmat[:5, 5:])
+
+    return dmat
 
 
 def dmsoc_cb(block = 'full'):
