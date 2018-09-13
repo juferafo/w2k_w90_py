@@ -267,18 +267,21 @@ class wtools(winit.calc):
        	return mi
 
     # TESTED AND WORKING!
-    def dmat(self, spin = "up", atom=''):
-        if not self.sp:
-            spin = '' 
+    def dmat(self, spin = "up", atom='', file_read = None):
+        if file_read:
+            f = file_read
+        else:
+            if not self.sp:
+                spin = '' 
+            f = self.case+".dmat"+spin
         
         if atom == '':
             re_at = re.compile('\s(atom)\s(density)\s(matrix)')
         else:
             re_at = re.compile(str(atom)+'\s(atom)\s(density)\s(matrix)')
 
-
-        if os.path.exists(self.case+".dmat"+spin):
-            with open(self.case+".dmat"+spin) as dm:
+        if os.path.exists(f):
+            with open(f) as dm:
        	        ldm = dm.readlines()
        	
             ldmts = {}
@@ -316,8 +319,9 @@ class wtools(winit.calc):
        	        return dmts[atom]
 
         else:
-           print("ERROR: "+self.case+".dmat"+spin+" file does not exist")
+           print("ERROR: "+f+" file does not exist")
            return None
+
 
     # This method was not intensively tested!!!!!
     def scfdmat(self, file_spin='up', dmat_spin = 'all', iatom = '', file_read = None):

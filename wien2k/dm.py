@@ -124,7 +124,7 @@ def wrap_dmat(uu, dd, ud, transform_class = False):
     return density_matrix
 
 
-# UNDER DEVELOPMENT
+# TESTED!          
 def dmat_wien2kformat(dm):
     """ This method transform a given density matrix into lines written in wien2k dmat format """
     print(type(dm)) 
@@ -155,47 +155,58 @@ def dmat_wien2kformat(dm):
     return lines_output
 
 
-# UNDER DEVELOPMENT
-def replace_dmat(density_matrix, spin_block = 'UPUP', atom = None, fwrite = None):
+# TESTED BUT THINGS TO IMPROVE!
+def replace_dmat(density_matrix, spin_block = 'full', atom = None, case = None):
+#def replace_dmat(density_matrix, spin_block = 'UPUP', atom = None, fwrite = None):
     '''
     This function writes the provided density_matrix of the given atom into the file fwrite 
     It was only tested for 1 or 2 atoms in the dmats!
     The user MUST provide the full density matrix! (2l+1)*2!
     '''
-    dmat_spin = {'UPUP' : 'up', 'DNDN' : 'dn', 'UPDN' : 'ud'}
-
     if spin_block == 'DNUP':
         print("DNUP block not available for case.dmat files.")
         print("Please write UPDN sector instead.")
+        return None
+
+    dmat_spin = {'UPUP' : 'up', 'DNDN' : 'dn', 'UPDN' : 'ud'}
+
+    if spin_block == 'full':
+        spin_block = dmat_spin.keys()
+    else:
+        spin_block = [spin_block]
 
     if not isinstance(density_matrix, dmat):
         density_matrix = dmat(density_matrix, block = "full")
     
-    dm = density_matrix.matblock(spin_block)
-    lines_dm = dmat_wien2kformat(dm)
-    if fwrite and atom:
-        if os.path.exists(fwrite):
-            with open(fwrite, 'r') as fdm:
-                ldm = fdm.readlines()
+    if case and atom:
+        for s in spin_block:
+            dm = density_matrix.matblock(s)
+            lines_dm = dmat_wien2kformat(dm)
             
-            re_at = re.compile(str(atom)+'\s(atom)\s(density)\s(matrix)')
-            for i in range(len(ldm)):
-                if re_at.search(ldm[i]):
-                    i_atom = i
-                    break
-            
-            ldm[i_atom+2:i_atom+2+len(lines_dm)] = lines_dm
-            
-            with open(fwrite, 'w') as fdm_out:
-                for l in ldm:
-                    fdm_out.write(l)
+            fwrite = case+".dmat"+dmat_spin[s]
+            if os.path.exists(fwrite):
+                with open(fwrite, 'r') as fdm:
+                    ldm = fdm.readlines()
                 
-        else:
-            print("ERROR: "+fwrite+" file does not exist")
-            return None
+                re_at = re.compile(str(atom)+'\s(atom)\s(density)\s(matrix)')
+                for i in range(len(ldm)):
+                    if re_at.search(ldm[i]):
+                        i_atom = i
+                        break
+                
+                ldm[i_atom+2:i_atom+2+len(lines_dm)] = lines_dm
+                
+                with open(fwrite, 'w') as fdm_out:
+                    for l in ldm:
+                        fdm_out.write(l)
+                    
+            else:
+                print("ERROR: "+fwrite+" file does not exist")
+                return None
 
     else:
         if not fwrite:
             print("ERROR! No fwrite provided!")
         else:
             print("ERROR! No atom provided!")
+
