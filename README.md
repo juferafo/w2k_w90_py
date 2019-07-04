@@ -1,6 +1,6 @@
 # WIEN2k and wannier90 python package
 
-This repository contains an object-oriented python package which can be used to extract
+This repository contains an object-oriented Python package which can be used to extract
 and process programmatically the data obtained from a [WIEN2k](http://www.wien2k.at)
 and/or [wannier90](http://www.wannier.org) calculations.
 It also contains a density-matrix class and a quantum-mechanics subpackage which supports, 
